@@ -34,10 +34,8 @@ public class Property {
         MAP (13),            ///< a string key to Property:value mapping @SINCE_1_0.0
         EXTENTS (14);        ///< a collection of 4 x uint16_t @SINCE_1_2.62
 
-        Type(int type) {
-            this.type = type;
-        }
-        public int type;
+        Type(int value) { this.value = value; }
+        public int value;
     };
 
     /**
@@ -51,10 +49,10 @@ public class Property {
         ANIMATABLE (2),         ///< If the property can be animated or constrained @SINCE_1_0.0
         ACCESS_MODE_COUNT (3);   ///< The number of access modes @SINCE_1_0.0
 
-        AccessMode(int accessMode) {
-            this.accessMode = accessMode;
+        AccessMode(int value) {
+            this.value = value;
         }
-        public int accessMode;
+        public int value;
     };
 
     public abstract class Value {
@@ -87,34 +85,45 @@ public class Property {
         }
     }
 
+    public final class NoneValue extends Value {
+        public final Property.Type getType() { return Type.NONE; }
+        public NoneValue() {}
+    }
+
     public final class BooleanValue extends Value {
         public final Property.Type getType() { return Type.BOOLEAN; }
+        public BooleanValue(boolean value) { this.value = value; }
         boolean value;
     }
 
     public final class FloatValue extends Value {
         public final Property.Type getType() { return Type.FLOAT; }
-        float value;
+        public FloatValue(float value) { this.value = value; }
+        public float value;
     }
 
     public final class IntegerValue extends Value {
         public final Property.Type getType() { return Type.INTEGER; }
-        int value;
+        public IntegerValue(int value) { this.value = value; }
+        public int value;
     }
 
     public final class Vector2Value extends Value {
         public final Property.Type getType() { return Type.VECTOR2; }
-        Vector2 value;
+        public Vector2Value(float x, float y) { value.x = x; value.y = y; }
+        public Vector2 value;
     }
 
     public final class Vector3Value extends Value {
         public final Property.Type getType() { return Type.VECTOR3; }
-        Vector3 value;
+        public Vector3Value(float x, float y, float z) { value.x = x; value.y = y; value.z = z; }
+        public Vector3 value;
     }
 
     public final class Vector4Value extends Value {
-        public final Property.Type getType() { return Type.INTEGER; }
-        Vector4 value;
+        public final Property.Type getType() { return Type.VECTOR4; }
+        public Vector4Value(float x, float y, float z, float w) { value.x = x; value.y = y; value.z = z; value.w = w; }
+        public Vector4 value;
     }
 
     public final class Array {

@@ -3,6 +3,10 @@ package com.sec.dali.object;
 import java.util.ArrayList;
 
 public class Handle {
+    static Handle New() { return new Handle(); };
+
+    public Handle() { this.nativeHandle = nativeNewHandle(); }
+
     public Handle( long nativeHandle ) {
         this.nativeHandle = nativeHandle;
     }
@@ -20,7 +24,7 @@ public class Handle {
     }
 
     public int registerProperty(String name, Property.Value propertyValue, Property.AccessMode accessMode) {
-        return nativeRegisterProperty(nativeHandle, name, propertyValue, accessMode.accessMode);
+        return nativeRegisterProperty(nativeHandle, name, propertyValue, accessMode);
     }
 
     public boolean isPropertyWritable(int index) {
@@ -59,10 +63,11 @@ public class Handle {
         return nativeIsPropertyAConstraintInput(nativeHandle, index);
     }
 
+    protected native long nativeNewHandle();
     protected native int nativeGetPropertyIndex(long nativeHandle, String name);
     protected native void nativeRemovePropertyNotifications(long nativeHandle);
     protected native int nativeGetPropertyCount(long nativeHandle);
-    protected native int nativeRegisterProperty(long nativeHandle, String name, Property.Value propertyValue, int accessMode);
+    protected native int nativeRegisterProperty(long nativeHandle, String name, Property.Value propertyValue, Property.AccessMode accessMode);
     protected native boolean nativeIsPropertyWritable(long nativeHandle, int index);
     protected native Property.Value nativeGetCurrentProperty(long nativeHandle, int index);
     protected native void nativeRemoveConstraints(long nativeHandle, int tag);
