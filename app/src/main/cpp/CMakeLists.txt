@@ -78,8 +78,10 @@ set_target_properties(png
         ${DALI_ANDROID}/android-dependencies/libpng/obj/local/${ANDROID_ABI}/libpng.a )
 
 add_library(daliviewjni SHARED
+        jniutils.cpp
         daliviewjni.cpp
-        handlejni.cpp)
+        handlejni.cpp
+        actorjni.cpp)
 
 # Include libraries needed for jnisurfaceview lib
 target_link_libraries(daliviewjni

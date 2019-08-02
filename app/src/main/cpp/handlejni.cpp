@@ -22,19 +22,13 @@
 
 #include <jni.h>
 
+#include "jniutils.h"
+
 #include <dali/dali.h>
 #include <dali/public-api/object/handle.h>
 #include <dali/devel-api/object/handle-devel.h>
 #include <dali/public-api/object/property-types.h>
 #include <dali/public-api/object/property-value.h>
-
-std::string convertToCPPString(JNIEnv *jenv, jstring jstr)
-{
-  const char* cstr = jenv->GetStringUTFChars( jstr, nullptr );
-  std::string str = std::string( cstr );
-  jenv->ReleaseStringUTFChars( jstr, cstr );
-  return str;
-}
 
 jint getEnumValue(JNIEnv* jenv, jobject jenum)
 {
@@ -181,16 +175,16 @@ jobject convertToJNIPropertyType(JNIEnv *jenv, Dali::Property::Type propertyType
 extern "C" JNIEXPORT jlong JNICALL Java_com_sec_dali_object_Handle_nativeNewHandle(JNIEnv* jenv, jobject obj)
 {
   Dali::Handle handle = Dali::Handle::New();
-  return reinterpret_cast<jlong>( handle.GetObjectPtr() );
+  return reinterpret_cast<jlong>( &handle.GetBaseObject() );
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_com_sec_dali_object_Handle_nativeGetPropertyIndex(JNIEnv* jenv, jobject obj, jlong handle, jstring name)
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
-    return handle.GetPropertyIndex(convertToCPPString(jenv, name) );
+    return handle.GetPropertyIndex( convertToCPPString( jenv, name ) );
   }
 }
 
@@ -198,7 +192,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_dali_object_Handle_nativeRemovePr
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
     return handle.RemovePropertyNotifications();
   }
@@ -208,7 +202,7 @@ extern "C" JNIEXPORT jint JNICALL Java_com_sec_dali_object_Handle_nativeGetPrope
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
     return handle.GetPropertyCount();
   }
@@ -218,10 +212,10 @@ extern "C" JNIEXPORT jint JNICALL Java_com_sec_dali_object_Handle_nativeRegister
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
-    handle.RegisterProperty(convertToCPPString(jenv, name),
-                            convertToCPPPropertyValue(jenv, propertyValue), static_cast<Dali::Property::AccessMode>( getEnumValue(jenv, accessMode) ));
+    handle.RegisterProperty( convertToCPPString(jenv, name),
+                             convertToCPPPropertyValue(jenv, propertyValue), static_cast<Dali::Property::AccessMode>( getEnumValue(jenv, accessMode) ));
   }
 }
 
@@ -229,9 +223,9 @@ extern "C" JNIEXPORT jboolean JNICALL Java_com_sec_dali_object_Handle_nativeIsPr
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
-    return handle.IsPropertyWritable(index) ? 1 : 0;
+    return handle.IsPropertyWritable(index);
   }
 }
 
@@ -239,7 +233,7 @@ extern "C" JNIEXPORT jobject JNICALL Java_com_sec_dali_object_Handle_nativeGetCu
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
     Dali::Property::Value value = handle.GetCurrentProperty(index);
     return convertToJNIPropertyValue(jenv, value);
@@ -250,7 +244,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_dali_object_Handle_nativeRemoveCo
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
     handle.RemoveConstraints(tag);
   }
@@ -260,7 +254,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_dali_object_Handle_nativeSetPrope
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
     handle.SetProperty( index, convertToCPPPropertyValue(jenv, propertyValue) );
   }
@@ -270,21 +264,21 @@ extern "C" JNIEXPORT jstring JNICALL Java_com_sec_dali_object_Handle_nativeGetPr
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
     return jenv->NewStringUTF(handle.GetPropertyName(index).c_str());
   }
 
-  return jenv->NewStringUTF("");
+  return jenv->NewStringUTF( "" );
 }
 
 extern "C" JNIEXPORT jboolean JNICALL Java_com_sec_dali_object_Handle_nativeIsPropertyAnimatable(JNIEnv* jenv, jobject obj, jlong handle, jint index)
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
-    return handle.IsPropertyAnimatable( index ) ? 1 : 0;
+    return handle.IsPropertyAnimatable( index );
   }
 
   return 0;
@@ -294,10 +288,10 @@ extern "C" JNIEXPORT jobject JNICALL Java_com_sec_dali_object_Handle_nativeGetPr
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
     Dali::Property::Type propertyType = handle.GetPropertyType(index);
-    return convertToJNIPropertyType(jenv, handle.GetPropertyType(index));
+    return convertToJNIPropertyType( jenv, handle.GetPropertyType(index) );
   }
 }
 
@@ -305,9 +299,9 @@ extern "C" JNIEXPORT jobject JNICALL Java_com_sec_dali_object_Handle_nativeGetPr
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
-    return convertToJNIPropertyValue(jenv, handle.GetProperty(index));
+    return convertToJNIPropertyValue( jenv, handle.GetProperty(index) );
   }
 }
 
@@ -315,9 +309,9 @@ extern "C" JNIEXPORT jboolean JNICALL Java_com_sec_dali_object_Handle_nativeIsPr
 {
   if( handle )
   {
-    Dali::BaseObject *baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
+    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );
     Dali::Handle handle = Dali::Handle::DownCast( baseObject );
-    return handle.IsPropertyAConstraintInput( index ) ? 1 : 0;
+    return handle.IsPropertyAConstraintInput( index );
   }
 }
 
