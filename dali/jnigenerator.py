@@ -4,7 +4,6 @@ import os
 import sys
 import re
 
-
 parsed = {}
 
 toJavaTypes = { 'void' : 'void',
@@ -22,7 +21,8 @@ toJavaTypes = { 'void' : 'void',
                 'int32_t' : 'int',
                 'int64_t' : 'long',
                 'string' : 'String',
-                'Property::Index' : 'int', }
+                'Property::Index' : 'int',
+                'Padding' : 'Rect', }
 
 def cppToJavaType(typeStr):
   typeStr = str(typeStr)
@@ -44,7 +44,7 @@ def parseArgsList(argsList, parsed):
   return parsed
 
 def parseFunctionsList(classBody, parsed):
-  functionPattern = re.compile('\n  (static\s+)?(const\s+)?(?P<returnType>[A-Za-z0-9_:]+)\s+(?P<functionName>[A-Za-z0-9_:]+)\(\s*(?P<argsList>.*)\s*\)(\s+const)?;')
+  functionPattern = re.compile('\n  (static\s+)?(const\s+)?(?P<returnType>[A-Za-z0-9_:]+)\s+(?P<functionName>[A-Za-z0-9_:]+)\(\s*(?P<argsList>.*)\s*\)(\s+const)?(;|({.*\n}))')
   m = functionPattern.search(classBody, 0)
   while m:
     functionName = m.group('functionName')
@@ -139,58 +139,150 @@ def cppToJNIType(typeStr):
     typeStr = 'jobject'
   return typeStr  
 
-def generateNativeFunction(className, functionName, parsedArgsList):
+autoConversionTypes = { 'void',
+                             'bool',
+                             'int',
+                             'long',
+                             'float',
+                             'double',
+                             'uint8_t',
+                             'uint16_t',
+                             'uint32_t',
+                             'uint64_t',
+                             'int8_t',
+                             'int16_t',
+                             'int32_t',
+                             'int64_t',
+                             'Property::Index' }
+
+def generateCPPFunctionArgsList(parsedArgsList):
+  stringBuffer = ''
+  for i in range(1, len(parsedArgsList)):
+    arg = parsedArgsList[i]
+    argType = str(arg[0])
+    autoConversionType = argType in autoConversionTypes
+    argType = argType.replace('std::', '')
+    argType = argType.replace('Dali::', '')
+    argType = argType.replace('::', '')
+    argTypeInstance = argType[0].lower() + argType[1:]
+    cppArgType = arg[0]
+    #TODO for all std types
+    if cppArgType != 'std::string':
+      cppArgType = 'Dali::' + cppArgType
+    if i != 1:
+      if not autoConversionType:
+        stringBuffer += ', ' + 'convertToCPP' + argType + '( jenv, ' + arg[2] + ' )'
+        jniConversionUtils['convertToCPP' + argType] = cppArgType + ' ' + 'convertToCPP'+ argType + '( JNIEnv* jenv, jobject ' + argTypeInstance + ' )\n{\n}\n\n'
+      else:
+        stringBuffer += ', ' + arg[2]
+    else:
+      if not autoConversionType:
+        stringBuffer += 'convertToCPP' + argType + '( jenv, ' + arg[2] + ' )'
+        jniConversionUtils['convertToCPP' + argType] = cppArgType + ' ' + 'convertToCPP'+ argType + '( JNIEnv* jenv, jobject ' + argTypeInstance + ' )\n{\n}\n\n'
+      else:
+        stringBuffer += arg[2]
+  return stringBuffer
+
+def generateNativeFunction(packageName, className, functionName, parsedArgsList):
   stringBuffer = ''
   returnArg = parsedArgsList[0]
-  typeStr = cppToJNIType(returnArg[0])
-  stringBuffer += 'extern "C" JNIEXPORT ' + typeStr + ' JNICALL Java_com_sec_dali_object_' + className + '_native' + functionName
+  returnArgType = str(returnArg[0])
+  returnArgInstance = returnArgType[0].lower() + returnArgType[1:]
+  returnArgInstance = returnArgInstance.replace('::', '')
+  autoConversionType = returnArgType in autoConversionTypes
+  classInstance = className[0].lower() + className[1:]
+  stringBuffer += 'extern "C" JNIEXPORT ' + cppToJNIType(returnArgType) + ' JNICALL Java_com_sec_dali' + '_' + packageName +'_' + className + '_native' + functionName
   stringBuffer += '(JNIEnv* jenv, jobject obj, jlong handle'
   for i in range(1, len(parsedArgsList)):
     arg = parsedArgsList[i]
     if arg[2] != '':
       stringBuffer += ', ' + cppToJNIType(arg[0]) + ' ' + arg[2]
-  stringBuffer += ');\n'
+  stringBuffer += ')\n'
+  stringBuffer += '{\n'
+  stringBuffer += '  if( handle )\n'
+  stringBuffer += '  {\n'
+  stringBuffer += '    Dali::BaseObject* baseObject = reinterpret_cast<Dali::BaseObject*>( handle );\n'
+  stringBuffer += '    Dali::' + className + ' ' + classInstance + ' = Dali::'+className+'::DownCast( baseObject );\n'
+  if returnArgType != 'void':
+    if not autoConversionType:
+        stringBuffer += '    Dali::' + returnArgType + ' ' + returnArgInstance + ' = ' + classInstance + '.' + functionName + '( ' + generateCPPFunctionArgsList(parsedArgsList) + ' );\n'
+        stringBuffer += '    return convertToJNI' + returnArgType.replace('::','') + '( jenv, ' + returnArgInstance + ' );\n'
+        jniConversionUtils['convertToJNI' + returnArgType] = 'jobject convertToJNI'+ returnArgType.replace('::','') + '( JNIEnv* jenv, Dali::' + returnArgType + ' ' + returnArgInstance + ' )\n{\n}\n\n'
+    else:
+      stringBuffer += '    return ' + classInstance + '.' + functionName + '( ' + generateCPPFunctionArgsList(parsedArgsList) + ' );\n'
+  else:
+    stringBuffer += '    ' + classInstance + '.' + functionName + '( ' + generateCPPFunctionArgsList(parsedArgsList) + ' );\n'
+  stringBuffer += '  }\n'
+  stringBuffer += '}\n'
   return stringBuffer
 
-def generateNativeFunctionList(className, parsedFunctions):
+def generateNativeFunctionList(packageName, className, parsedFunctions):
   stringBuffer = ''
+  packageName.replace('.', '_')
   for functionName in parsedFunctions:
-    if functionName == 'New' or functionName == 'DownCast':
+    if functionName == 'DownCast':
       continue
-    stringBuffer += generateNativeFunction(className, functionName, parsedFunctions[functionName])
+    stringBuffer += generateNativeFunction(packageName, className, functionName, parsedFunctions[functionName]) + "\n";
   return stringBuffer
+
+def getPackageName(path):
+  packageName = re.sub('.*-api/', '', path)
+  packageName = re.sub('\/.*\.h', '', packageName)
+  packageName = re.sub('\/', '.', packageName)
+  return packageName
+
+javaFileBuffer = ''
+jniConversionUtils = {}
 
 def generateJNI(headerFilePath, generatedFilePath):
   file = open(headerFilePath, 'r')
   buffer = file.read()
   file.close()
-  className = ''
-  classBody = ''
 
-  m = re.search('(class|struct)\s+DALI_[A-Za-z0-9_]+_API\s+(?P<className>[A-Za-z0-9_]+)(\s+:(\s+(public|protected|private)\s+[A-Za-z0-9_]+,?))?\s+{(?P<classBody>(.|\n)*)};', buffer) 
+  packageName = getPackageName(headerFilePath)
+  className = ''
+  baseClassList = ''
+  classBody = ''
+  jniFileBuffer = ''
+  jniConversionUtilsFileBuffer = ''
+
+  m = re.search('(class|struct)\s+DALI_[A-Za-z0-9_]+_API\s+(?P<className>[A-Za-z0-9_]+)(?P<baseClassList>\s*:(\s+(public|protected|private)\s+[A-Za-z0-9_]+,?))?\s*{(?P<classBody>(.|\n)*)};', buffer) 
   if m:
     className = m.group('className')
     classBody = m.group('classBody')
+    if m.group('baseClassList') is not None:
+      baseClassList = m.group('baseClassList')
     parsed[className] = {}
     parseFunctionsList(classBody, parsed[className])
 
-  javaFileBuffer = ''
-  jniBuffer = ''
-
   for className in parsed:
-    javaClassName = className + '.java'
-    javaClassBuffer = 'public class ' + className + ' {\n'
-    javaClassBuffer += '    ' + 'public ' + className + '( long nativeHandle ) {\n        this.nativeHandle = nativeHandle;\n    }\n\n'
-    javaClassBuffer += generateJavaFunctionList(parsed[className])
-    javaClassBuffer += generateNativeJavaFunctionList(parsed[className])
-    javaClassBuffer += '    protected long nativeHandle;\n'
-    javaClassBuffer += '};\n'
-    jniBuffer += generateNativeFunctionList(className, parsed[className])
+    javaFileBuffer = 'package com.sec.dali.' + packageName + ';\n'
+    javaFileBuffer += '\n' 
+    baseClassName = ''
+    if baseClassList != '':
+      m = re.search('(public|protected|private)\s+(?P<baseClassName>[A-Za-z0-9_]+)', baseClassList)
+      if m:
+        baseClassName = m.group('baseClassName')
+    javaFileBuffer += 'public class ' + className + ' ' + ('extends ' if baseClassName != '' else '') + baseClassName +' {\n'
+    javaFileBuffer += '    public ' + className + '( long nativeHandle ) {\n'
+    javaFileBuffer += '        this.nativeHandle = nativeHandle;\n'
+    javaFileBuffer += '    }\n'
+    javaFileBuffer += '\n'
+    javaFileBuffer += generateJavaFunctionList(parsed[className])
+    javaFileBuffer += generateNativeJavaFunctionList(parsed[className])
+    javaFileBuffer += '    protected long nativeHandle;\n'
+    javaFileBuffer += '};\n'
 
-  print(javaClassBuffer)
-  print(jniBuffer)
+    jniFileBuffer += generateNativeFunctionList(packageName, className, parsed[className])
+    #print(javaFileBuffer)
+    for jniConversionUtil in jniConversionUtils.values():
+      jniConversionUtilsFileBuffer += jniConversionUtil
+    print(jniConversionUtilsFileBuffer)
+    print(jniFileBuffer)
 
 print('Generaing JNI for ' + sys.argv[1] + ' to ' + sys.argv[2])
 generateJNI(sys.argv[1], sys.argv[2]) 
 
+
 #print(str(parsed))
+
