@@ -8,7 +8,7 @@ LOCAL_MODULE := libdali
 cppfiles :=
 SRC_PATH := $(LOCAL_PATH)/../..
 
-INCLUDE_PATH=$(SRC_PATH)/dali-env/android/include
+INCLUDE_PATH=$(LOCAL_PATH)/include
 
 LOCAL_EXPORT_C_INCLUDES += $(INCLUDE_PATH)
 
@@ -65,6 +65,12 @@ include $(adaptor_thread_dir)/file.list
 adaptor_network_dir=$(SRC_PATH)/dali-adaptor/dali/internal/network
 include $(adaptor_network_dir)/file.list
 
+adaptor_web_engine_dir=$(SRC_PATH)/dali-adaptor/dali/internal/web-engine
+include $(adaptor_web_engine_dir)/file.list
+
+adaptor_sensor_dir=$(SRC_PATH)/dali-adaptor/dali/internal/sensor
+include $(adaptor_sensor_dir)/file.list
+
 adaptor_window_system_dir=$(SRC_PATH)/dali-adaptor/dali/internal/window-system
 include $(adaptor_window_system_dir)/file.list
 
@@ -79,6 +85,9 @@ include $(adaptor_clipboard_dir)/file.list
 
 adaptor_imaging_dir=$(SRC_PATH)/dali-adaptor/dali/internal/imaging
 include $(adaptor_imaging_dir)/file.list
+
+adaptor_video_dir=$(SRC_PATH)/dali-adaptor/dali/internal/video
+include $(adaptor_video_dir)/file.list
 
 adaptor_styling_dir=$(SRC_PATH)/dali-adaptor/dali/internal/styling
 include $(adaptor_styling_dir)/file.list
@@ -123,6 +132,8 @@ cppfiles += $(public_api_header_files) \
             $(adaptor_trace_android_src_files) \
             $(adaptor_thread_common_src_files) \
             $(adaptor_network_common_src_files) \
+            $(adaptor_web_engine_common_src_files) \
+            $(adaptor_sensor_common_src_files) \
             $(adaptor_window_system_common_src_files) \
             $(adaptor_window_system_android_src_files) \
             $(adaptor_graphics_gles_src_files) \
@@ -133,6 +144,7 @@ cppfiles += $(public_api_header_files) \
             $(adaptor_clipboard_android_src_files) \
             $(adaptor_imaging_common_src_files) \
             $(adaptor_imaging_android_src_files) \
+            $(adaptor_video_common_src_files) \
             $(adaptor_styling_common_src_files) \
             $(adaptor_accessibility_common_src_files) \
             $(adaptor_accessibility_android_src_files) \
@@ -178,14 +190,48 @@ LOCAL_CFLAGS += -I$(SRC_PATH)/android-dependencies/libharfbuzz
 LOCAL_CFLAGS += -I$(SRC_PATH)/android-dependencies/libjpeg-turbo
 LOCAL_CFLAGS += -I$(SRC_PATH)/android-dependencies/libpng
 
-#LOCAL_CFLAGS += -I$(SRC_PATH)/dali-generated
-# default shaders
-#cppfiles += $(shell find $(SRC_PATH)/dali-generated -name '*.cpp' )
-
 LOCAL_CFLAGS += -I$(SRC_PATH)/dali-toolkit
 LOCAL_CFLAGS += -I$(SRC_PATH)/dali-toolkit/dali-toolkit
 LOCAL_CFLAGS += -I$(SRC_PATH)/dali-toolkit/dali-toolkit/devel-api
 LOCAL_CFLAGS += -I$(SRC_PATH)/dali-toolkit/dali-toolkit/public-api
 
-include $(BUILD_STATIC_LIBRARY)
+LOCAL_LDLIBS := -lz -landroid -lEGL -lGLESv3 -llog
+LOCAL_STATIC_LIBRARIES := libpng libgif libexif libjpeg-turbo libfontcontfig libfreetype libharfbuzz
+include $(BUILD_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libpng
+LOCAL_SRC_FILES := $(SRC_PATH)/android-dependencies/libpng/obj/local/$(TARGET_ARCH_ABI)/libpng.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libgif
+LOCAL_SRC_FILES := $(SRC_PATH)/android-dependencies/libgif/obj/local/$(TARGET_ARCH_ABI)/libgif.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libexif
+LOCAL_SRC_FILES := $(SRC_PATH)/android-dependencies/libexif/obj/local/$(TARGET_ARCH_ABI)/libexif.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libjpeg-turbo
+LOCAL_SRC_FILES := $(SRC_PATH)/android-dependencies/libjpeg-turbo/obj/local/$(TARGET_ARCH_ABI)/libjpeg-turbo.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libfontcontfig
+LOCAL_SRC_FILES := $(SRC_PATH)/android-dependencies/libfontconfig/obj/local/$(TARGET_ARCH_ABI)/libfontconfig.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libfreetype
+LOCAL_SRC_FILES := $(SRC_PATH)/android-dependencies/libfreetype/obj/local/$(TARGET_ARCH_ABI)/libfreetype.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := libharfbuzz
+LOCAL_SRC_FILES := $(SRC_PATH)/android-dependencies/libharfbuzz/obj/local/$(TARGET_ARCH_ABI)/libharfbuzz.a
+include $(PREBUILT_STATIC_LIBRARY)
+
 

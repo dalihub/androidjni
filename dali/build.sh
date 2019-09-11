@@ -15,10 +15,11 @@ fi
 
 if [ "$1" = "clean" ]; then
 echo "Cleaning dali..."
-rm -rf ../../../../dali-env/android
+rm -rf ./include
+rm -rf ./lib
 fi
 
-if [ ! -d ../../../../dali-env/android ]; then
+if [ ! -d ./include ]; then
 TARGET=x86_64 API=25 make headers
 TARGET=armeabi-v7a API=25 make headers
 fi
