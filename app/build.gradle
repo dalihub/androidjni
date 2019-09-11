@@ -39,56 +39,15 @@ android {
             path "src/main/cpp/CMakeLists.txt"
         }
     }
-
-    flavorDimensions 'cpuArch'
-    productFlavors {
-        arm7 {
-            dimension 'cpuArch'
-            ndk {
-                abiFilter 'armeabi-v7a'
-            }
-        }
-        arm8 {
-            dimension 'cpuArch'
-            ndk {
-                abiFilters 'arm64-v8a'
-            }
-        }
-        x86 {
-            dimension 'cpuArch'
-            ndk {
-                abiFilter 'x86'
-            }
-        }
-        x86_64 {
-            dimension 'cpuArch'
-            ndk {
-                abiFilter 'x86_64'
-            }
-        }
-        universal {
-            dimension 'cpuArch'
-            // include all default ABIs. with NDK-r16,  it is:
-            //   armeabi-v7a, arm64-v8a, x86, x86_64
-        }
-    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation project(path: ':daliview')
+//    implementation project(":daliview")
 }
 
-task buildDaliDependencies(type:Exec) {
-    workingDir "../../android-dependencies"
-    commandLine 'sh', './buildall.sh'
-}
 
-task buildDali(type:Exec) {
-    workingDir "../dali"
-    commandLine 'sh', './build.sh'
-}
 
-buildDali.dependsOn buildDaliDependencies
-preBuild.dependsOn buildDali
