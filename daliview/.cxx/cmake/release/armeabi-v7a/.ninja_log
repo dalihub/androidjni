@@ -1,0 +1,9 @@
+# ninja log v5
+0	3	0	clean	a7fd71fa3294cd11
+0	757	1567520820	CMakeFiles/daliview.dir/daliview.cpp.o	1cd1d6af32f0e16f
+757	1811	1567520821	/home/ladmin/dali-android/dali/androidjni/daliview/build/intermediates/cmake/release/obj/armeabi-v7a/libdaliview.so	cd762b8df0032232
+0	678	1567522182	CMakeFiles/daliview.dir/daliview.cpp.o	1cd1d6af32f0e16f
+678	1261	1567522182	/home/ladmin/dali-android/dali/androidjni/daliview/build/intermediates/cmake/release/obj/armeabi-v7a/libdaliview.so	cd762b8df0032232
+0	18	1568218234	build.ninja	16ec90f3e8b50ce
+0	5	0	clean	a7fd71fa3294cd11
+0	2	0	clean	a7fd71fa3294cd11

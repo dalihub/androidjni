@@ -1,0 +1,72 @@
+{
+  "variant": {
+    "module": {
+      "rootBuildGradleFolder": "/home/ladmin/dali-android/dali/androidjni",
+      "sdkFolder": "/home/ladmin/Android/Sdk",
+      "isNativeCompilerSettingsCacheEnabled": false,
+      "isBuildOnlyTargetAbiEnabled": true,
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "/home/ladmin/dali-android/dali/androidjni/daliview/build/intermediates",
+      "gradleModulePathName": ":daliview",
+      "moduleRootFolder": "/home/ladmin/dali-android/dali/androidjni/daliview",
+      "makeFile": "/home/ladmin/dali-android/dali/androidjni/daliview/src/main/cpp/CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "compilerSettingsCacheFolder": "/home/ladmin/dali-android/dali/androidjni/.cxx",
+      "cxxFolder": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx",
+      "ndkFolder": "/home/ladmin/Android/Sdk/ndk-bundle",
+      "ndkVersion": "20.0.5594570",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "cmakeToolchainFile": "."
+    },
+    "buildSystemArgumentList": [
+      "-DANDROID_STL\u003dc++_shared"
+    ],
+    "cFlagList": [],
+    "cppFlagsList": [
+      "-fexceptions -frtti -w -Wall -std\u003dgnu++11"
+    ],
+    "variantName": "debug",
+    "soFolder": "/home/ladmin/dali-android/dali/androidjni/daliview/build/intermediates/cmake/debug/lib",
+    "objFolder": "/home/ladmin/dali-android/dali/androidjni/daliview/build/intermediates/cmake/debug/obj",
+    "jsonFolder": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug",
+    "gradleBuildOutputFolder": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cxx/debug",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "X86_64"
+    ],
+    "buildTargetSet": []
+  },
+  "abi": "X86_64",
+  "abiPlatformVersion": 24,
+  "cxxBuildFolder": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug/x86_64",
+  "jsonFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug/x86_64/android_gradle_build.json",
+  "gradleBuildOutputFolder": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cxx/debug/x86_64",
+  "objFolder": "/home/ladmin/dali-android/dali/androidjni/daliview/build/intermediates/cmake/debug/obj/x86_64",
+  "buildCommandFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug/x86_64/build_command.txt",
+  "buildOutputFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug/x86_64/build_output.txt",
+  "modelOutputFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug/x86_64/build_model.json",
+  "cmake": {
+    "cmakeListsWrapperFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cxx/debug/x86_64/CMakeLists.txt",
+    "toolchainWrapperFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cxx/debug/x86_64/android_gradle_build.toolchain.cmake",
+    "buildGenerationStateFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cxx/debug/x86_64/build_generation_state.json",
+    "cacheKeyFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cxx/debug/x86_64/compiler_cache_key.json",
+    "compilerCacheUseFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cxx/debug/x86_64/compiler_cache_use.json",
+    "compilerCacheWriteFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cxx/debug/x86_64/compiler_cache_write.json",
+    "toolchainSettingsFromCacheFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cxx/debug/x86_64/compiler_settings_cache.cmake",
+    "cmakeWrappingBaseFolder": "."
+  },
+  "jsonGenerationLoggingRecordFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug/x86_64/json_generation_record.json",
+  "compileCommandsJsonFile": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug/x86_64/compile_commands.json"
+}

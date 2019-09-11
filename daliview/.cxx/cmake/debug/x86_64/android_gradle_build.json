@@ -1,0 +1,42 @@
+{
+  "stringTable": {
+    "0": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug/x86_64",
+    "1": "--target=x86_64-none-linux-android24 --gcc-toolchain=/home/ladmin/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/ladmin/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Ddaliview_EXPORTS -I/home/ladmin/dali-android/dali/androidjni/daliview/src/main/cpp/../../../../dali/include -I/home/ladmin/dali-android/dali/androidjni/daliview/src/main/cpp/../../../../dali/include/dali -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security -fexceptions -frtti -w -Wall -std=gnu++11 -fexceptions -frtti -w -Wall -std=gnu++11 -O0 -fno-limit-debug-info -fPIC"
+  },
+  "buildFiles": [
+    "/home/ladmin/dali-android/dali/androidjni/daliview/src/main/cpp/CMakeLists.txt",
+    "/home/ladmin/Android/Sdk/ndk-bundle/build/cmake/android.toolchain.cmake",
+    "/home/ladmin/Android/Sdk/ndk-bundle/build/cmake/platforms.cmake"
+  ],
+  "cleanCommands": [
+    "/home/ladmin/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug/x86_64\" clean"
+  ],
+  "buildTargetsCommand": "/home/ladmin/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug/x86_64\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "daliview-Debug-x86_64": {
+      "buildCommand": "/home/ladmin/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/debug/x86_64\" daliview",
+      "buildType": "debug",
+      "toolchain": "2947851738",
+      "abi": "x86_64",
+      "artifactName": "daliview",
+      "files": [
+        {
+          "src": "/home/ladmin/dali-android/dali/androidjni/daliview/src/main/cpp/daliview.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "headers": [],
+      "output": "/home/ladmin/dali-android/dali/androidjni/daliview/build/intermediates/cmake/debug/obj/x86_64/libdaliview.so"
+    }
+  },
+  "toolchains": {
+    "2947851738": {
+      "cppCompilerExecutable": "/home/ladmin/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

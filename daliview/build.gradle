@@ -1,0 +1,78 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        minSdkVersion 25
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        externalNativeBuild {
+            cmake {
+                cppFlags "-fexceptions -frtti -w -Wall -std=gnu++11"
+                arguments '-DANDROID_STL=c++_shared'
+            }
+        }
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+    aaptOptions {
+        noCompress ''
+    }
+    buildTypes {
+        debug {
+            ndk {
+                abiFilters "x86_64", "armeabi-v7a"
+            }
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            ndk {
+                abiFilters "x86_64", "armeabi-v7a"
+            }
+        }
+    }
+    packagingOptions {
+        pickFirst 'lib/x86_64/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs += '../dali/lib'
+            assets.srcDirs += '../dali/assets'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            version '3.10.2'
+            path "src/main/cpp/CMakeLists.txt"
+        }
+    }
+    compileOptions {
+        targetCompatibility = 1.6
+        sourceCompatibility = 1.6
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+task buildDaliDependencies(type:Exec) {
+    workingDir "../../android-dependencies"
+    commandLine 'sh', './buildall.sh'
+}
+
+task buildDali(type:Exec) {
+    workingDir "../dali"
+    commandLine 'sh', './build.sh'
+}
+
+//buildDali.dependsOn buildDaliDependencies
+//preBuild.dependsOn buildDali

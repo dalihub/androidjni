@@ -35,8 +35,6 @@
 #include <dali/devel-api/adaptor-framework/application-devel.h>
 #include <dali/integration-api/debug.h>
 
-#include <dali-toolkit/dali-toolkit.h>
-
 /// Application Event Enum
 // Shared with enum in dali/internal/adaptor/android/framework-androidjni.cpp
 enum
@@ -48,60 +46,6 @@ enum
   APP_RESET,
   APP_LANGUAGE_CHANGE,
   APP_DESTROYED,
-};
-
-class JNIGlueController : public Dali::ConnectionTracker
-{
-public:
-
-  JNIGlueController( Dali::Application& application )
-  : mApplication( application )
-  {
-    // Connect to the Application's Init signal
-    mApplication.InitSignal().Connect( this, &JNIGlueController::Create );
-    mApplication.TerminateSignal().Connect( this, &JNIGlueController::Terminate );
-    mApplication.ResumeSignal().Connect( this, &JNIGlueController::Resume );
-    mApplication.PauseSignal().Connect( this, &JNIGlueController::Pause );
-  }
-
-  ~JNIGlueController()
-  {
-    // Nothing to do here;
-  }
-
-  // The Init signal is received once (only) during the Application lifetime
-  void Create( Dali::Application& application )
-  {
-    // Get a handle to the stage
-    Dali::Stage stage = Dali::Stage::GetCurrent();
-    stage.SetBackgroundColor( Dali::Color::RED );
-
-    Dali::Toolkit::TextLabel textLabel = Dali::Toolkit::TextLabel::New( "Hello World" );
-    textLabel.SetAnchorPoint( Dali::AnchorPoint::TOP_LEFT );
-    textLabel.SetName( "helloWorldLabel" );
-    stage.Add( textLabel );
-
-    // Respond to a click anywhere on the stage
-//    stage.GetRootLayer().TouchSignal().Connect( this, &HelloWorldController::OnTouch );
-
-    // Respond to key events
-    //  stage.KeyEventSignal().Connect( this, &HelloWorldController::OnKeyEvent );
-  }
-
-  void Resume( Dali::Application& application ) {
-  }
-
-  void Pause( Dali::Application& application ) {
-  }
-
-  void Terminate( Dali::Application& application )
-  {
-    mApplication.Reset();
-    delete this;
-  }
-
-private:
-  Dali::Application mApplication;
 };
 
 void ExtractAsset( AAssetManager* assetManager, std::string assetPath, std::string filePath )
@@ -179,7 +123,7 @@ void ExtractFontConfig( AAssetManager* assetManager, std::string assetFontConfig
 
 extern "C" void FcConfigPathInit(const char* path, const char* file);
 
-extern "C" JNIEXPORT jlong JNICALL Java_com_sec_daliview_DaliView_nativeOnStart(JNIEnv* jenv, jobject obj, jobject assetManager, jstring filesPath )
+extern "C" JNIEXPORT jlong JNICALL Java_com_sec_daliview_DaliView_nativeOnConfigure(JNIEnv* jenv, jobject obj, jobject assetManager, jstring filesPath )
 {
   DALI_LOG_ERROR( "nativeOnStart" );
   Dali::DevelApplication::SetApplicationContext( jenv );
@@ -209,10 +153,12 @@ extern "C" JNIEXPORT jlong JNICALL Java_com_sec_daliview_DaliView_nativeOnStart(
   AConfiguration* configuration = AConfiguration_new();
   AConfiguration_fromAssetManager( configuration, am );
   Dali::DevelApplication::SetApplicationConfiguration( configuration );
+}
 
+extern "C" JNIEXPORT jlong JNICALL Java_com_sec_daliview_DaliView_nativeOnCreate(JNIEnv* jenv, jobject obj)
+{
+  // Default, creates empty app
   Dali::Application application = Dali::Application::New( 0, NULL );
-  new JNIGlueController( application );
-
   return reinterpret_cast<jlong>( application.GetObjectPtr() );
 }
 
@@ -240,7 +186,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnPause(J
   }
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnStop(JNIEnv* jenv, jobject obj, jlong handle)
+extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnFinalize(JNIEnv* jenv, jobject obj, jlong handle)
 {
   DALI_LOG_ERROR( "nativeOnStop" );
 
