@@ -78,14 +78,24 @@ public:
   }
 
 private:
-  Application&  mApplication;
+  Application& mApplication;
 };
+
+HelloWorldController* test;
+void OnTerminate(Application& application)
+{
+  delete test;
+  test = nullptr;
+}
 
 jlong OnCreate(JNIEnv* jenv, jobject obj)
 {
   Application application = Application::New( 0, NULL );
-  HelloWorldController test( application );
-  reinterpret_cast<jlong>( application.GetObjectPtr() );
+  application.GetObjectPtr()->Reference();
+  application.TerminateSignal().Connect( &OnTerminate );
+
+  test = new HelloWorldController( application );
+  return reinterpret_cast<jlong>( application.GetObjectPtr() );
 }
 
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved)
@@ -96,16 +106,16 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved)
   }
 
   // Find your class. JNI_OnLoad is called from the correct class loader context for this to work.
-  jclass c = env->FindClass("com/sec/daliview/DaliView");
-  if (c == nullptr)
+  jclass clazz = env->FindClass("com/sec/daliview/DaliView");
+  if (clazz == nullptr)
     return JNI_ERR;
 
   // Register your class' native methods.
   static const JNINativeMethod methods[] = {
-          { "nativeOnCreate", "()L", reinterpret_cast<JNINativeMethod*>(OnCreate) },
+          { "nativeOnCreate", "()J", (void*)&OnCreate },
   };
 
-  int rc = env->RegisterNatives(c, methods, sizeof(methods)/sizeof(JNINativeMethod));
+  int rc = env->RegisterNatives(clazz, methods, sizeof(methods)/sizeof(JNINativeMethod));
   if (rc != JNI_OK)
     return rc;
 

@@ -123,7 +123,7 @@ void ExtractFontConfig( AAssetManager* assetManager, std::string assetFontConfig
 
 extern "C" void FcConfigPathInit(const char* path, const char* file);
 
-extern "C" JNIEXPORT jlong JNICALL Java_com_sec_daliview_DaliView_nativeOnConfigure(JNIEnv* jenv, jobject obj, jobject assetManager, jstring filesPath )
+extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnConfigure(JNIEnv* jenv, jobject obj, jobject assetManager, jstring filesPath )
 {
   DALI_LOG_ERROR( "nativeOnStart" );
   Dali::DevelApplication::SetApplicationContext( jenv );
@@ -131,8 +131,12 @@ extern "C" JNIEXPORT jlong JNICALL Java_com_sec_daliview_DaliView_nativeOnConfig
   AAssetManager* am = AAssetManager_fromJava( jenv, assetManager );
   Dali::DevelApplication::SetApplicationAssets( am );
 
-  struct stat st = { 0 };
-  const char* cstr = jenv->GetStringUTFChars( filesPath, nullptr );
+  AConfiguration* configuration = AConfiguration_new();
+  AConfiguration_fromAssetManager( configuration, am );
+  Dali::DevelApplication::SetApplicationConfiguration( configuration );
+
+  jboolean isCopy = false;
+  const char* cstr = jenv->GetStringUTFChars( filesPath, &isCopy );
   std::string filesDir = std::string( cstr );
   jenv->ReleaseStringUTFChars( filesPath, cstr );
 
@@ -142,6 +146,7 @@ extern "C" JNIEXPORT jlong JNICALL Java_com_sec_daliview_DaliView_nativeOnConfig
   setenv( "FONTCONFIG_FILE", fontconfigFile.c_str(), 1 );
   FcConfigPathInit( fontconfigPath.c_str(), fontconfigFile.c_str() );
 
+  struct stat st = { 0 };
   if( stat( fontconfigPath.c_str(), &st ) == -1 )
   {
     mkdir( fontconfigPath.c_str(), S_IRWXU );
@@ -149,16 +154,13 @@ extern "C" JNIEXPORT jlong JNICALL Java_com_sec_daliview_DaliView_nativeOnConfig
     ExtractAssetsDir( am, "fonts/dejavu", fontconfigPath + "/dejavu" );
     ExtractAssetsDir( am, "fonts/tizen", fontconfigPath + "/tizen" );
   }
-
-  AConfiguration* configuration = AConfiguration_new();
-  AConfiguration_fromAssetManager( configuration, am );
-  Dali::DevelApplication::SetApplicationConfiguration( configuration );
 }
 
 extern "C" JNIEXPORT jlong JNICALL Java_com_sec_daliview_DaliView_nativeOnCreate(JNIEnv* jenv, jobject obj)
 {
   // Default, creates empty app
   Dali::Application application = Dali::Application::New( 0, NULL );
+  application.GetObjectPtr()->Reference();
   return reinterpret_cast<jlong>( application.GetObjectPtr() );
 }
 
@@ -203,6 +205,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnFinaliz
     }
 
     Dali::DevelApplication::SetApplicationAssets( nullptr );
+    refObject->Unreference();
   }
 }
 
