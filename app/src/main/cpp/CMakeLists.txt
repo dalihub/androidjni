@@ -7,6 +7,14 @@ set(DALI_ANDROID "${CMAKE_CURRENT_SOURCE_DIR}/../../../../dali")
 include_directories(${DALI_ANDROID}/include)
 include_directories(${DALI_ANDROID}/include/dali)
 
+add_library(dalicore
+        SHARED
+        IMPORTED )
+
+set_target_properties(dalicore
+        PROPERTIES IMPORTED_LOCATION
+        ${DALI_ANDROID}/lib/${ANDROID_ABI}/libdali-core.so )
+
 add_library(dali
         SHARED
         IMPORTED )
@@ -32,6 +40,7 @@ add_library(dalidemo SHARED
 target_link_libraries(dalidemo
                       daliview
                       dali
+                      dalicore
                       android
                       EGL
                       GLESv3

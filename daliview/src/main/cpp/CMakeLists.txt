@@ -15,12 +15,21 @@ set_target_properties(dali
         PROPERTIES IMPORTED_LOCATION
         ${DALI_ANDROID}/lib/${ANDROID_ABI}/libdali.so )
 
+add_library(dalicore
+        SHARED
+        IMPORTED )
+
+set_target_properties(dalicore
+        PROPERTIES IMPORTED_LOCATION
+        ${DALI_ANDROID}/lib/${ANDROID_ABI}/libdali-core.so )
+
 add_library(daliview SHARED
         daliview.cpp)
 
 # Include libraries needed for daliview lib
 target_link_libraries(daliview
                       dali
+                      dalicore
                       android
                       EGL
                       GLESv3)
