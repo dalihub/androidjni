@@ -4,3 +4,7 @@ screenshot.png
 .gradle
 .idea
 androidjni.iml
+local.properties
+gradlew
+gradlew.bat
+
