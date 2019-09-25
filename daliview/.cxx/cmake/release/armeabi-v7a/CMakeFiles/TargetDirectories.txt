@@ -1,3 +1,0 @@
-/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/release/armeabi-v7a/CMakeFiles/rebuild_cache.dir
-/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/release/armeabi-v7a/CMakeFiles/edit_cache.dir
-/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/release/armeabi-v7a/CMakeFiles/daliview.dir

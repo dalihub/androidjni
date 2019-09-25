@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/ladmin/dali-android/dali/androidjni/daliview/.cxx/cmake/release/armeabi-v7a",
-  "command": "/home/ladmin/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=armv7-none-linux-androideabi24 --gcc-toolchain=/home/ladmin/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/ladmin/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/sysroot  -Ddaliview_EXPORTS -I/home/ladmin/dali-android/dali/androidjni/daliview/src/main/cpp/../../../../dali/include -I/home/ladmin/dali-android/dali/androidjni/daliview/src/main/cpp/../../../../dali/include/dali  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -march=armv7-a -mthumb -Wa,--noexecstack -Wformat -Werror=format-security  -fexceptions -frtti -w -Wall -std=gnu++11 -fexceptions -frtti -w -Wall -std=gnu++11 -Oz -DNDEBUG  -fPIC   -o CMakeFiles/daliview.dir/daliview.cpp.o -c /home/ladmin/dali-android/dali/androidjni/daliview/src/main/cpp/daliview.cpp",
-  "file": "/home/ladmin/dali-android/dali/androidjni/daliview/src/main/cpp/daliview.cpp"
-}
-]
