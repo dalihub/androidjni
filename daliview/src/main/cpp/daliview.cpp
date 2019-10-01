@@ -25,6 +25,7 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <android/configuration.h>
+#include <android/input.h>
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
@@ -34,6 +35,7 @@
 #include <dali/public-api/adaptor-framework/application.h>
 #include <dali/devel-api/adaptor-framework/application-devel.h>
 #include <dali/integration-api/debug.h>
+#include <dali/integration-api/adaptors/adaptor.h>
 
 /// Application Event Enum
 // Shared with enum in dali/internal/adaptor/android/framework-androidjni.cpp
@@ -172,7 +174,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnResume(
   {
     Dali::RefObject* refObject = reinterpret_cast<Dali::RefObject*>( handle );
     Dali::Application application = Dali::DevelApplication::DownCast( refObject );
-    Dali::DevelApplication::AppEventHandler( application, APP_RESUME, nullptr );
+    Dali::DevelApplication::AppStatusHandler( application, APP_RESUME, nullptr );
   }
 }
 
@@ -184,28 +186,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnPause(J
   {
     Dali::RefObject* refObject = reinterpret_cast<Dali::RefObject*>( handle );
     Dali::Application application = Dali::DevelApplication::DownCast( refObject );
-    Dali::DevelApplication::AppEventHandler( application, APP_PAUSE, nullptr );
-  }
-}
-
-extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnFinalize(JNIEnv* jenv, jobject obj, jlong handle)
-{
-  DALI_LOG_ERROR( "nativeOnStop" );
-
-  if( handle )
-  {
-    Dali::RefObject* refObject = reinterpret_cast<Dali::RefObject*>( handle );
-    Dali::Application application = Dali::DevelApplication::DownCast( refObject );
-    Dali::DevelApplication::AppEventHandler( application, APP_DESTROYED, nullptr );
-    AConfiguration* configuration = static_cast<AConfiguration*>( Dali::DevelApplication::GetApplicationConfiguration() );
-    if( configuration )
-    {
-      Dali::DevelApplication::SetApplicationConfiguration( nullptr );
-      AConfiguration_delete( configuration );
-    }
-
-    Dali::DevelApplication::SetApplicationAssets( nullptr );
-    refObject->Unreference();
+    Dali::DevelApplication::AppStatusHandler( application, APP_PAUSE, nullptr );
   }
 }
 
@@ -228,11 +209,11 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeSetSurfac
     {
       if( window )
       {
-        Dali::DevelApplication::AppEventHandler( application, APP_WINDOW_CREATED, window );
+        Dali::DevelApplication::AppStatusHandler( application, APP_WINDOW_CREATED, window );
       }
       else
       {
-        Dali::DevelApplication::AppEventHandler( application, APP_DESTROYED, nullptr );
+        Dali::DevelApplication::AppStatusHandler( application, APP_DESTROYED, nullptr );
       }
     }
 
@@ -241,4 +222,83 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeSetSurfac
       ANativeWindow_release( oldWindow );
     }
   }
+}
+
+extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnTouchEvent(JNIEnv* jenv, jobject obj, jlong handle, jint deviceId, jint action, jfloat x, jfloat y, jlong timestamp)
+{
+  Dali::TouchPoint::State state = Dali::TouchPoint::Down;
+  switch ( action & AMOTION_EVENT_ACTION_MASK )
+  {
+    case AMOTION_EVENT_ACTION_DOWN:
+      break;
+    case AMOTION_EVENT_ACTION_UP:
+      state = Dali::TouchPoint::Up;
+      break;
+    case AMOTION_EVENT_ACTION_MOVE:
+      state = Dali::TouchPoint::Motion;
+      break;
+    case AMOTION_EVENT_ACTION_CANCEL:
+      state = Dali::TouchPoint::Interrupted;
+      break;
+    case AMOTION_EVENT_ACTION_OUTSIDE:
+      state = Dali::TouchPoint::Leave;
+      break;
+  }
+
+  Dali::TouchPoint point( deviceId, state, x, y );
+  Dali::Adaptor::Get().FeedTouchPoint( point, timestamp );
+}
+
+extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnKeyEvent(JNIEnv* jenv, jobject obj, jlong handle, jint deviceId, jint action, jint keyCode, jlong timestamp)
+{
+  Dali::KeyEvent::State state = Dali::KeyEvent::Down;
+  switch ( action )
+  {
+    case AKEY_EVENT_ACTION_DOWN:
+      break;
+    case AKEY_EVENT_ACTION_UP:
+      state = Dali::KeyEvent::Up;
+      break;
+  }
+
+  std::string keyName = "";
+  switch( keyCode )
+  {
+    case 4:
+      keyName = "XF86Back";
+      break;
+    default:
+      break;
+  }
+
+  Dali::KeyEvent keyEvent( keyName, "", keyCode, 0, timestamp, state );
+  Dali::Adaptor::Get().FeedKeyEvent( keyEvent );
+}
+
+extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnFinalize(JNIEnv* jenv, jobject obj, jlong handle)
+{
+  DALI_LOG_ERROR( "nativeOnStop" );
+
+  if( handle )
+  {
+    Dali::RefObject* refObject = reinterpret_cast<Dali::RefObject*>( handle );
+    Dali::Application application = Dali::DevelApplication::DownCast( refObject );
+    Dali::DevelApplication::AppStatusHandler( application, APP_DESTROYED, nullptr );
+    AConfiguration* configuration = static_cast<AConfiguration*>( Dali::DevelApplication::GetApplicationConfiguration() );
+    if( configuration )
+    {
+      Dali::DevelApplication::SetApplicationConfiguration( nullptr );
+      AConfiguration_delete( configuration );
+    }
+
+    Dali::DevelApplication::SetApplicationAssets( nullptr );
+    refObject->Unreference();
+  }
+}
+
+extern "C" JNIEXPORT jboolean JNICALL Java_com_sec_daliview_DaliView_nativeOnCallback(JNIEnv* jenv, jclass clazz, jlong callback, jlong callbackData)
+{
+  DALI_LOG_ERROR( "nativeOnCallback" );
+  bool result = reinterpret_cast<bool(*)(void*)>( callback )( reinterpret_cast<void*>( callbackData ) );
+  return ( result ) ? JNI_TRUE : JNI_FALSE;
 }
