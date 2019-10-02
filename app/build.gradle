@@ -33,6 +33,11 @@ android {
             }
         }
     }
+    sourceSets {
+        main {
+            assets.srcDirs += './assets'
+        }
+    }
     externalNativeBuild {
         cmake {
             version '3.10.2'

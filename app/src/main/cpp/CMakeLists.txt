@@ -33,6 +33,8 @@ set_target_properties(daliview
         PROPERTIES IMPORTED_LOCATION
         ${DALIVIEW}/build/intermediates/cmake/${build_type}/obj/${ANDROID_ABI}/libdaliview.so )
 
+add_definitions(-DDEMO_IMAGE_DIR=\"assets/images/\")
+add_definitions(-DDEMO_MODEL_DIR=\"assets/models/\")
 add_library(dalidemo SHARED
         dalidemo.cpp)
 
