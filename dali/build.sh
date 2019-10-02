@@ -22,6 +22,15 @@ exit 0
 fi
 
 if [ ! -d ./include ]; then
+
+if [ -z "$DEBUG" ]; then
+TARGET=x86_64 ./build_core.sh Release
+TARGET=armeabi-v7a ./build_core.sh Release
+else
+TARGET=x86_64 ./build_core.sh Debug
+TARGET=armeabi-v7a ./build_core.sh Debug
+fi
+
 TARGET=x86_64 API=25 make headers
 TARGET=armeabi-v7a API=25 make headers
 echo -e "#include <string>\n\nstd::string GetSystemCachePath() { return \"\"; }\n" > ../../dali-adaptor/dali/internal/adaptor/common/system-cache-path.cpp
