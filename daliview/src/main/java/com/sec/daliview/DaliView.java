@@ -141,7 +141,7 @@ public class DaliView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
-    private static ArrayMap<Integer, NativeCallback> mIdleCallbacks;
+    private static ArrayMap<Integer, NativeCallback> mIdleCallbacks = new ArrayMap<Integer, NativeCallback>();
     private static int mIdleId = 0;
     public static int addIdle(long nativeCallback, long nativeCallbackData, long delay) {
         ++mIdleId;

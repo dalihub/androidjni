@@ -213,7 +213,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeSetSurfac
       }
       else
       {
-        Dali::DevelApplication::AppStatusHandler( application, APP_DESTROYED, nullptr );
+        Dali::DevelApplication::AppStatusHandler( application, APP_WINDOW_DESTROYED, oldWindow );
       }
     }
 
@@ -226,6 +226,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeSetSurfac
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnTouchEvent(JNIEnv* jenv, jobject obj, jlong handle, jint deviceId, jint action, jfloat x, jfloat y, jlong timestamp)
 {
+  DALI_LOG_ERROR( "nativeOnTouchEvent" );
   Dali::TouchPoint::State state = Dali::TouchPoint::Down;
   switch ( action & AMOTION_EVENT_ACTION_MASK )
   {
@@ -251,6 +252,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnTouchEv
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnKeyEvent(JNIEnv* jenv, jobject obj, jlong handle, jint deviceId, jint action, jint keyCode, jlong timestamp)
 {
+  DALI_LOG_ERROR( "nativeOnKeyEvent" );
   Dali::KeyEvent::State state = Dali::KeyEvent::Down;
   switch ( action )
   {
@@ -277,7 +279,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnKeyEven
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnFinalize(JNIEnv* jenv, jobject obj, jlong handle)
 {
-  DALI_LOG_ERROR( "nativeOnStop" );
+  DALI_LOG_ERROR( "nativeOnFinalize" );
 
   if( handle )
   {
