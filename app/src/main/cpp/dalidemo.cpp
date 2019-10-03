@@ -15,8 +15,7 @@
  *
  */
 
-#include <jni.h>
-
+#include <dali/integration-api/adaptors/android/application-launcher.h>
 #include <dali-toolkit/dali-toolkit.h>
 
 using namespace Dali;
@@ -296,41 +295,5 @@ private:
   bool mScaled;
 };
 
-Application application = Application::New( 0, NULL );
-Model3dViewController test( application );
-
-jlong OnCreate(JNIEnv* jenv, jobject obj)
-{
-  // Extra reference to prevent finalize clearing the app
-  application.GetObjectPtr()->Reference();
-  // not blocking, doing nothing except for setting running flag
-  application.MainLoop();
-  return reinterpret_cast<jlong>( application.GetObjectPtr() );
-}
-
-JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved)
-{
-  JNIEnv* env;
-  if (vm->GetEnv(reinterpret_cast<void**>( &env ), JNI_VERSION_1_6) != JNI_OK) {
-    return JNI_ERR;
-  }
-
-  // Find your class. JNI_OnLoad is called from the correct class loader context for this to work.
-  jclass clazz = env->FindClass("com/sec/daliview/DaliView");
-  if (clazz == nullptr)
-    return JNI_ERR;
-
-  // Register your class' native methods.
-  static const JNINativeMethod methods[] = {
-          { "nativeOnCreate", "()J", (void*)&OnCreate },
-  };
-
-  int rc = env->RegisterNatives(clazz, methods, sizeof(methods)/sizeof(JNINativeMethod));
-  if (rc != JNI_OK)
-    return rc;
-
-  return JNI_VERSION_1_6;
-}
-
-
+RUN( Model3dViewController )
 
