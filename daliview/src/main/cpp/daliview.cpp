@@ -128,7 +128,9 @@ extern "C" void FcConfigPathInit(const char* path, const char* file);
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnConfigure(JNIEnv* jenv, jobject obj, jobject assetManager, jstring filesPath )
 {
   DALI_LOG_ERROR( "nativeOnStart" );
-  Dali::DevelApplication::SetApplicationContext( jenv );
+  JavaVM* jvm = nullptr;
+  jenv->GetJavaVM( &jvm );
+  Dali::DevelApplication::SetApplicationContext( jvm );
 
   AAssetManager* am = AAssetManager_fromJava( jenv, assetManager );
   Dali::DevelApplication::SetApplicationAssets( am );
