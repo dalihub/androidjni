@@ -114,7 +114,7 @@ extern "C" void FcConfigPathInit(const char* path, const char* file);
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnConfigure(JNIEnv* jenv, jobject obj, jobject assetManager, jstring filesPath )
 {
-  DALI_LOG_ERROR( "nativeOnConfigure" );
+  DALI_LOG_RELEASE_INFO( "nativeOnConfigure" );
   Dali::Integration::AndroidFramework::New();
 
   JavaVM* jvm = nullptr;
@@ -151,6 +151,8 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnConfigu
 
 extern "C" JNIEXPORT jlong JNICALL Java_com_sec_daliview_DaliView_nativeOnCreate(JNIEnv* jenv, jobject obj)
 {
+  DALI_LOG_RELEASE_INFO( "nativeOnCreate" );
+
   // Default, creates empty app
   Dali::Application application = Dali::Application::New( 0, NULL );
   application.GetObjectPtr()->Reference();
@@ -159,7 +161,7 @@ extern "C" JNIEXPORT jlong JNICALL Java_com_sec_daliview_DaliView_nativeOnCreate
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnResume(JNIEnv* jenv, jobject obj, jlong handle)
 {
-  DALI_LOG_ERROR( "nativeOnResume" );
+  DALI_LOG_RELEASE_INFO( "nativeOnResume handle(%lld)", handle );
 
   if( handle )
   {
@@ -169,7 +171,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnResume(
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnPause(JNIEnv* jenv, jobject obj, jlong handle)
 {
-  DALI_LOG_ERROR("nativeOnPause");
+  DALI_LOG_RELEASE_INFO( "nativeOnPause handle(%lld)", handle );
 
   if( handle )
   {
@@ -179,7 +181,8 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnPause(J
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeSetSurface(JNIEnv* jenv, jobject obj, jlong handle, jobject surface)
 {
-  DALI_LOG_ERROR( "nativeSetSurface" );
+  DALI_LOG_RELEASE_INFO( "nativeSetSurface handle(%lld)", handle );
+
   if( handle )
   {
     ANativeWindow* oldWindow = Dali::Integration::AndroidFramework::Get().GetApplicationWindow();
@@ -189,8 +192,11 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeSetSurfac
       newWindow = ANativeWindow_fromSurface(jenv, surface);
     }
 
+    DALI_LOG_WARNING( "oldWindow(%p), newWindow(%p)", oldWindow, newWindow );
     if( newWindow != oldWindow )
     {
+      Dali::Integration::AndroidFramework::Get().SetApplicationWindow( newWindow );
+
       if( newWindow )
       {
         Dali::Integration::AndroidFramework::Get().OnWindowCreated( newWindow );
@@ -199,18 +205,19 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeSetSurfac
       {
         Dali::Integration::AndroidFramework::Get().OnWindowDestroyed( oldWindow );
       }
-    }
 
-    if( oldWindow )
-    {
-      ANativeWindow_release( oldWindow );
+      if( oldWindow )
+      {
+        ANativeWindow_release( oldWindow );
+      }
     }
   }
 }
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnTouchEvent(JNIEnv* jenv, jobject obj, jlong handle, jint deviceId, jint action, jfloat x, jfloat y, jlong timestamp)
 {
-  DALI_LOG_ERROR( "nativeOnTouchEvent" );
+  DALI_LOG_RELEASE_INFO( "nativeOnTouchEvent handle(%lld), deviceId(%d), action(%d), x(%f), y(%f), timestamp(%lld)", handle, deviceId, action, x, y, timestamp );
+
   Dali::TouchPoint::State state = Dali::TouchPoint::Down;
   switch ( action & AMOTION_EVENT_ACTION_MASK )
   {
@@ -236,7 +243,8 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnTouchEv
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnKeyEvent(JNIEnv* jenv, jobject obj, jlong handle, jint deviceId, jint action, jint keyCode, jlong timestamp)
 {
-  DALI_LOG_ERROR( "nativeOnKeyEvent" );
+  DALI_LOG_RELEASE_INFO( "nativeOnKeyEvent handle(%lld), deviceId(%d), action(%d), keyCode(%d), timestamp(%lld)", handle, deviceId, action, keyCode, timestamp );
+
   Dali::KeyEvent::State state = Dali::KeyEvent::Down;
   switch ( action )
   {
@@ -263,7 +271,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnKeyEven
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnFinalize(JNIEnv* jenv, jobject obj, jlong handle)
 {
-  DALI_LOG_ERROR( "nativeOnFinalize" );
+  DALI_LOG_RELEASE_INFO( "nativeOnFinalize handle(%lld)", handle );
 
   if( handle )
   {
@@ -285,7 +293,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnFinaliz
 
 extern "C" JNIEXPORT jboolean JNICALL Java_com_sec_daliview_DaliView_nativeOnCallback(JNIEnv* jenv, jclass clazz, jlong callback, jlong callbackData)
 {
-  DALI_LOG_ERROR( "nativeOnCallback" );
+  DALI_LOG_RELEASE_INFO( "nativeOnCallback callback(%lld), callbackData(%lld)", callback, callbackData );
   bool result = reinterpret_cast<bool(*)(void*)>( callback )( reinterpret_cast<void*>( callbackData ) );
   return ( result ) ? JNI_TRUE : JNI_FALSE;
 }
