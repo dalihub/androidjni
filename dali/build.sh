@@ -33,7 +33,7 @@ fi
 
 TARGET=x86_64 API=25 make headers
 TARGET=armeabi-v7a API=25 make headers
-echo -e "#include <string>\n\nstd::string GetSystemCachePath() { return \"\"; }\n" > ../../dali-adaptor/dali/internal/adaptor/common/system-cache-path.cpp
+cp ./system-cache-path.cpp ../../dali-adaptor/dali/internal/adaptor/common/system-cache-path.cpp
 fi
 
 if [ -z "$DEBUG" ]; then
