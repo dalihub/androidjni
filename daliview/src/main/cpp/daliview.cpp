@@ -32,23 +32,10 @@
 #include <dali/public-api/common/stage.h>
 #include <dali/public-api/events/touch-point.h>
 #include <dali/public-api/events/key-event.h>
-#include <dali/public-api/adaptor-framework/application.h>
 #include <dali/devel-api/adaptor-framework/application-devel.h>
 #include <dali/integration-api/debug.h>
 #include <dali/integration-api/adaptors/adaptor.h>
-
-/// Application Event Enum
-// Shared with enum in dali/internal/adaptor/android/framework-androidjni.cpp
-enum
-{
-  APP_WINDOW_CREATED = 0,
-  APP_WINDOW_DESTROYED,
-  APP_PAUSE,
-  APP_RESUME,
-  APP_RESET,
-  APP_LANGUAGE_CHANGE,
-  APP_DESTROYED,
-};
+#include <dali/integration-api/adaptors/android/android-framework.h>
 
 void ExtractAsset( AAssetManager* assetManager, std::string assetPath, std::string filePath )
 {
@@ -127,17 +114,19 @@ extern "C" void FcConfigPathInit(const char* path, const char* file);
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnConfigure(JNIEnv* jenv, jobject obj, jobject assetManager, jstring filesPath )
 {
-  DALI_LOG_ERROR( "nativeOnStart" );
+  DALI_LOG_ERROR( "nativeOnConfigure" );
+  Dali::Integration::AndroidFramework::New();
+
   JavaVM* jvm = nullptr;
   jenv->GetJavaVM( &jvm );
-  Dali::DevelApplication::SetApplicationContext( jvm );
+  Dali::Integration::AndroidFramework::Get().SetJVM( jvm );
 
   AAssetManager* am = AAssetManager_fromJava( jenv, assetManager );
-  Dali::DevelApplication::SetApplicationAssets( am );
+  Dali::Integration::AndroidFramework::Get().SetApplicationAssets( am );
 
   AConfiguration* configuration = AConfiguration_new();
   AConfiguration_fromAssetManager( configuration, am );
-  Dali::DevelApplication::SetApplicationConfiguration( configuration );
+  Dali::Integration::AndroidFramework::Get().SetApplicationConfiguration( configuration );
 
   jboolean isCopy = false;
   const char* cstr = jenv->GetStringUTFChars( filesPath, &isCopy );
@@ -174,9 +163,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnResume(
 
   if( handle )
   {
-    Dali::RefObject* refObject = reinterpret_cast<Dali::RefObject*>( handle );
-    Dali::Application application = Dali::DevelApplication::DownCast( refObject );
-    Dali::DevelApplication::AppStatusHandler( application, APP_RESUME, nullptr );
+    Dali::Integration::AndroidFramework::Get().OnResume();
   }
 }
 
@@ -186,9 +173,7 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnPause(J
 
   if( handle )
   {
-    Dali::RefObject* refObject = reinterpret_cast<Dali::RefObject*>( handle );
-    Dali::Application application = Dali::DevelApplication::DownCast( refObject );
-    Dali::DevelApplication::AppStatusHandler( application, APP_PAUSE, nullptr );
+    Dali::Integration::AndroidFramework::Get().OnPause();
   }
 }
 
@@ -197,25 +182,22 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeSetSurfac
   DALI_LOG_ERROR( "nativeSetSurface" );
   if( handle )
   {
-    Dali::RefObject* refObject = reinterpret_cast<Dali::RefObject*>( handle );
-    Dali::Application application = Dali::DevelApplication::DownCast( refObject );
-
-    ANativeWindow* oldWindow = static_cast<ANativeWindow*>( Dali::DevelApplication::GetApplicationWindow() );
-    ANativeWindow* window = nullptr;
+    ANativeWindow* oldWindow = Dali::Integration::AndroidFramework::Get().GetApplicationWindow();
+    ANativeWindow* newWindow = nullptr;
     if( surface )
     {
-      window = ANativeWindow_fromSurface(jenv, surface);
+      newWindow = ANativeWindow_fromSurface(jenv, surface);
     }
 
-    if( window != oldWindow )
+    if( newWindow != oldWindow )
     {
-      if( window )
+      if( newWindow )
       {
-        Dali::DevelApplication::AppStatusHandler( application, APP_WINDOW_CREATED, window );
+        Dali::Integration::AndroidFramework::Get().OnWindowCreated( newWindow );
       }
       else
       {
-        Dali::DevelApplication::AppStatusHandler( application, APP_WINDOW_DESTROYED, oldWindow );
+        Dali::Integration::AndroidFramework::Get().OnWindowDestroyed( oldWindow );
       }
     }
 
@@ -285,17 +267,18 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnFinaliz
 
   if( handle )
   {
-    Dali::RefObject* refObject = reinterpret_cast<Dali::RefObject*>( handle );
-    Dali::Application application = Dali::DevelApplication::DownCast( refObject );
-    Dali::DevelApplication::AppStatusHandler( application, APP_DESTROYED, nullptr );
-    AConfiguration* configuration = static_cast<AConfiguration*>( Dali::DevelApplication::GetApplicationConfiguration() );
+    AConfiguration* configuration = Dali::Integration::AndroidFramework::Get().GetApplicationConfiguration();
+    Dali::Integration::AndroidFramework::Get().OnTerminate();
+
     if( configuration )
     {
-      Dali::DevelApplication::SetApplicationConfiguration( nullptr );
       AConfiguration_delete( configuration );
+      Dali::Integration::AndroidFramework::Get().SetApplicationConfiguration( nullptr );
     }
 
-    Dali::DevelApplication::SetApplicationAssets( nullptr );
+    Dali::Integration::AndroidFramework::Get().SetApplicationAssets( nullptr );
+
+    Dali::RefObject* refObject = reinterpret_cast<Dali::RefObject*>( handle );
     refObject->Unreference();
   }
 }

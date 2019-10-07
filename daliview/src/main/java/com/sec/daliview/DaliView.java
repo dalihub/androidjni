@@ -26,26 +26,28 @@ public class DaliView extends SurfaceView implements SurfaceHolder.Callback {
     public DaliView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         getHolder().addCallback(this);
-        nativeOnConfigure(context.getAssets(), context.getFilesDir().getAbsolutePath());
 
         System.loadLibrary("dali-core");
         System.loadLibrary("dali");
-        System.loadLibrary("daliview");
-        System.loadLibrary("dalidemo");
 
+        System.loadLibrary("daliview");
+        nativeOnConfigure(context.getAssets(), context.getFilesDir().getAbsolutePath());
+
+        System.loadLibrary("dalidemo");
         nativeHandle = nativeOnCreate();
     }
 
     public DaliView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         getHolder().addCallback(this);
-        nativeOnConfigure(context.getAssets(), context.getFilesDir().getAbsolutePath());
 
         System.loadLibrary("dali-core");
         System.loadLibrary("dali");
-        System.loadLibrary("daliview");
-        System.loadLibrary("dalidemo");
 
+        System.loadLibrary("daliview");
+        nativeOnConfigure(context.getAssets(), context.getFilesDir().getAbsolutePath());
+
+        System.loadLibrary("dalidemo");
         nativeHandle = nativeOnCreate();
     }
 
