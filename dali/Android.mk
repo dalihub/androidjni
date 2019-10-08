@@ -161,8 +161,6 @@ LOCAL_CFLAGS += -I$(ANDROID_NDK)/sysroot/usr/include
 LOCAL_CFLAGS += -I$(ANDROID_NDK)/sysroot/usr/include/android
 LOCAL_CFLAGS += -I$(ANDROID_NDK)/sources/android/native_app_glue
 
-LOCAL_CFLAGS += -I$(SRC_PATH)/dali-env/android/include
-
 LOCAL_CFLAGS += -I$(SRC_PATH)/android-dependencies/libexif
 LOCAL_CFLAGS += -I$(SRC_PATH)/android-dependencies/libfontconfig
 LOCAL_CFLAGS += -I$(SRC_PATH)/android-dependencies/libfreetype/include
@@ -177,6 +175,8 @@ LOCAL_CFLAGS += -I$(SRC_PATH)/dali-toolkit
 LOCAL_CFLAGS += -I$(SRC_PATH)/dali-toolkit/dali-toolkit
 LOCAL_CFLAGS += -I$(SRC_PATH)/dali-toolkit/dali-toolkit/devel-api
 LOCAL_CFLAGS += -I$(SRC_PATH)/dali-toolkit/dali-toolkit/public-api
+
+LOCAL_CFLAGS += -I$(LOCAL_PATH)/include
 
 LOCAL_SHARED_LIBRARIES := dali-core
 LOCAL_STATIC_LIBRARIES := exif jpeg-turbo png gif fontconfig harfbuzz freetype
