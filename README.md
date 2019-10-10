@@ -32,10 +32,10 @@ Getting Started
    export ANDROID_SDK=path/to/sdk
    ```
 10. Update androidjni/local.properties
-   ```
-   sdk.dir=path/to/sdk
-   ndk.dir=path/to/ndk
-   ```
+    ```
+    sdk.dir=path/to/sdk
+    ndk.dir=path/to/ndk
+    ```
 11. if you have a proxy update androidjni/gradle.properties
     ```
     #http proxy setup
