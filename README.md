@@ -18,7 +18,7 @@ Getting Started
    * Choose standard installation, leave default components checked, download.
 2. Install the Android NDK:
    * In the Android studio window, go to *Configure* -> *SDK Manager*, check Android SDK Location: path/to/sdk. You will use this for the ANDROID_SDK environment variable later on.
-   * Download Android NDK following instructions from in the [Download the NDK and Tools](https://developer.android.com/ndk/guides#download-ndk).
+   * Download Android NDK following instructions in the [Download the NDK and Tools](https://developer.android.com/ndk/guides#download-ndk) section only.
    * Once installed, note the NDK path for the environment variable later on. path/to/ndk is the folder containing ndk-build. Usually, it is path/to/sdk/ndk-bundle.
 3. Create a folder called **dali** and then change to that folder. Currently, it is important that you call it **dali**.
 4. Clone the following repos in this folder from https://github.com/dalihub/:
