@@ -71,6 +71,7 @@ public:
   {
     // Connect to the Application's Init signal
     mApplication.InitSignal().Connect( this, &Model3dViewController::Create );
+    mApplication.ResumeSignal().Connect( this, &Model3dViewController::OnResume );
   }
 
   ~Model3dViewController()
@@ -83,13 +84,9 @@ public:
   {
     // Get a handle to the stage
     Stage stage = Stage::GetCurrent();
+    stage.SetBackgroundColor(Color::TRANSPARENT);
     Vector2 screenSize = stage.GetSize();
-
-    //Add background
-    Toolkit::ImageView backView = Toolkit::ImageView::New( BACKGROUND_IMAGE );
-    backView.SetParentOrigin( ParentOrigin::CENTER );
-    backView.SetAnchorPoint( AnchorPoint::CENTER );
-    stage.Add( backView );
+    Actor backView = stage.GetRootLayer();
 
     mModelCounter = 0;
 
@@ -275,6 +272,13 @@ public:
       }
     }
   }
+
+  void OnResume(Dali::Application &application)
+  {
+    // Workaround to ensure the background stays transparent on resume
+    Stage::GetCurrent().SetBackgroundColor(Color::TRANSPARENT);
+  }
+
 
 
 private:

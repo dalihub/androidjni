@@ -2,6 +2,7 @@ package com.sec.daliview;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
@@ -25,6 +26,11 @@ public class DaliView extends SurfaceView implements SurfaceHolder.Callback {
 
     public DaliView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        setZOrderOnTop(true);    // necessary
+        SurfaceHolder sfhTrackHolder = getHolder();
+        sfhTrackHolder.setFormat(PixelFormat.TRANSPARENT);
+
         getHolder().addCallback(this);
 
         System.loadLibrary("dali-core");
@@ -39,6 +45,11 @@ public class DaliView extends SurfaceView implements SurfaceHolder.Callback {
 
     public DaliView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+
+        setZOrderOnTop(true);    // necessary
+        SurfaceHolder sfhTrackHolder = getHolder();
+        sfhTrackHolder.setFormat(PixelFormat.TRANSPARENT);
+
         getHolder().addCallback(this);
 
         System.loadLibrary("dali-core");
