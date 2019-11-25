@@ -34,8 +34,8 @@
 #include <dali/public-api/events/key-event.h>
 #include <dali/devel-api/adaptor-framework/application-devel.h>
 #include <dali/integration-api/debug.h>
-#include <dali/integration-api/adaptors/adaptor.h>
-#include <dali/integration-api/adaptors/android/android-framework.h>
+#include <dali/integration-api/adaptor-framework/adaptor.h>
+#include <dali/integration-api/adaptor-framework/android/android-framework.h>
 
 void ExtractAsset( AAssetManager* assetManager, std::string assetPath, std::string filePath )
 {
@@ -78,7 +78,7 @@ void ExtractAssetsDir( AAssetManager* assetManager, std::string assetDirPath, st
   }
 }
 
-void ExtractFontConfig( AAssetManager* assetManager, std::string assetFontConfig, std::string fontsPath )
+void ExtractFontConfig( AAssetManager* assetManager, std::string assetFontConfig, std::string filesPath, std::string fontsPath )
 {
   AAsset* asset = AAssetManager_open( assetManager, assetFontConfig.c_str(), AASSET_MODE_BUFFER );
   if( asset )
@@ -89,15 +89,12 @@ void ExtractFontConfig( AAssetManager* assetManager, std::string assetFontConfig
     length = AAsset_read( asset, buffer, length );
 
     std::string fontConfig = std::string( buffer, length );
-    int i = fontConfig.find("<dir></dir>");
-    if( i != std::string::npos )
-      fontConfig.replace( i + strlen("<dir>"), 0, fontsPath );
+    int i = fontConfig.find("~");
+    if( i != std::string::npos ) {
+      fontConfig.replace(i, 1, filesPath);
+    }
 
-    i = fontConfig.find("<cachedir></cachedir>");
-    if( i != std::string::npos )
-      fontConfig.replace( i + strlen("<cachedir>"), 0, fontsPath );
-
-    std::string fontsFontConfig = fontsPath + "/fonts.conf";
+    std::string fontsFontConfig = fontsPath;
     FILE* file = fopen( fontsFontConfig.c_str(), "wb" );
     if( file )
     {
@@ -143,9 +140,12 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnConfigu
   if( stat( fontconfigPath.c_str(), &st ) == -1 )
   {
     mkdir( fontconfigPath.c_str(), S_IRWXU );
-    ExtractFontConfig( am, "fonts/fonts.conf", fontconfigPath );
+    ExtractFontConfig( am, "fonts/fonts.conf", filesDir, fontconfigPath + "/fonts.conf");
+    ExtractFontConfig( am, "fonts/fonts.dtd", filesDir, fontconfigPath + "/fonts.dtd" );
+    ExtractFontConfig( am, "fonts/local.conf", filesDir, fontconfigPath + "/local.conf" );
     ExtractAssetsDir( am, "fonts/dejavu", fontconfigPath + "/dejavu" );
     ExtractAssetsDir( am, "fonts/tizen", fontconfigPath + "/tizen" );
+    ExtractAssetsDir( am, "fonts/bitmap", fontconfigPath + "/bitmap" );
   }
 }
 

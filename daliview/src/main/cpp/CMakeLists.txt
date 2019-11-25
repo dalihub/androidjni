@@ -3,33 +3,32 @@ cmake_minimum_required(VERSION 3.4.1)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -frtti -w -Wall -std=gnu++11")
 
 # DALi
-set(DALI_ANDROID "${CMAKE_CURRENT_SOURCE_DIR}/../../../../dali")
-include_directories(${DALI_ANDROID}/include)
-include_directories(${DALI_ANDROID}/include/dali)
+get_filename_component(DALI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE)
 
-add_library(dali
-        SHARED
-        IMPORTED )
+set(ENV{PKG_CONFIG_PATH}  "${DALI_DIR}/dali-env/android/lib/${ANDROID_ABI}/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+find_package(PkgConfig REQUIRED)
 
-set_target_properties(dali
-        PROPERTIES IMPORTED_LOCATION
-        ${DALI_ANDROID}/lib/${ANDROID_ABI}/libdali.so )
+include_directories(${DALI_DIR}/dali-env/android/include)
+include_directories(${DALI_DIR}/dali-env/android/include/dali)
 
-add_library(dalicore
-        SHARED
-        IMPORTED )
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+set(ENABLE_TRACE ON)
+else()
+set(ENABLE_TRACE OFF)
+endif()
 
-set_target_properties(dalicore
-        PROPERTIES IMPORTED_LOCATION
-        ${DALI_ANDROID}/lib/${ANDROID_ABI}/libdali-core.so )
+pkg_check_modules(DALI_CORE dali-core REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
+pkg_check_modules(DALI_ADAPTOR dali-adaptor REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
+pkg_check_modules(DALI_TOOLKIT dali-toolkit REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
 
 add_library(daliview SHARED
         daliview.cpp)
 
 # Include libraries needed for daliview lib
 target_link_libraries(daliview
-                      dali
-                      dalicore
+                      ${DALI_TOOLKIT_LDFLAGS}
+                      ${DALI_ADAPTOR_LDFLAGS}
+                      ${DALI_CORE_LDFLAGS}
                       android
                       EGL
                       GLESv3)

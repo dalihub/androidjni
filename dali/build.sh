@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ -z "$NDK" ]; then
+if [ -z "$ANDROID_SDK" ]; then
   . ./env.sh
 fi
 
@@ -15,34 +15,17 @@ fi
 
 if [ "$1" = "clean" ]; then
 echo "Cleaning dali..."
-rm -rf ./include
-rm -rf ./lib
-rm -rd ./dali-core
+rm -rf ./dali-core
+rm -rf ./dali-adaptor
+rm -rf ./dali-toolkit
 exit 0
 fi
 
-if [ ! -d ./include ]; then
-
-if [ -z "$DEBUG" ]; then
-TARGET=x86_64 ./build_core.sh Release
-TARGET=armeabi-v7a ./build_core.sh Release
-else
-TARGET=x86_64 ./build_core.sh Debug
-TARGET=armeabi-v7a ./build_core.sh Debug
+if [ ! -z "$DEBUG" ]; then
+export ENABLE_TRACE=ON
 fi
 
-TARGET=x86_64 API=25 make headers
-TARGET=armeabi-v7a API=25 make headers
-cp ./system-cache-path.cpp ../../dali-adaptor/dali/internal/adaptor/common/system-cache-path.cpp
-fi
+ANDROID_PLATFORM=26 ANDROID_ABI=armeabi-v7a ./build_core.sh
+ANDROID_PLATFORM=26 ANDROID_ABI=armeabi-v7a ./build_adaptor.sh
+ANDROID_PLATFORM=26 ANDROID_ABI=armeabi-v7a ./build_toolkit.sh
 
-if [ -z "$DEBUG" ]; then
-TARGET=x86_64 ./build_core.sh Release
-TARGET=armeabi-v7a ./build_core.sh Release
-else
-TARGET=x86_64 ./build_core.sh Debug
-TARGET=armeabi-v7a ./build_core.sh Debug
-fi
-
-TARGET=x86_64 API=25 make $@
-TARGET=armeabi-v7a API=25 make $@

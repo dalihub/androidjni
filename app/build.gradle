@@ -1,11 +1,19 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('../key.jks')
+            storePassword 'Samsung'
+            keyAlias = 'key0'
+            keyPassword 'Samsung'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId 'com.example.dalidemo'
-        minSdkVersion 25
-        targetSdkVersion 28
+        minSdkVersion 26
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         externalNativeBuild {
@@ -21,20 +29,24 @@ android {
     buildTypes {
         debug {
             ndk {
-                abiFilters "x86_64", "armeabi-v7a"
+                abiFilters "armeabi-v7a"
             }
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
+            debuggable = true
+            signingConfig signingConfigs.release
             ndk {
-                abiFilters "x86_64", "armeabi-v7a"
+                abiFilters "armeabi-v7a"
             }
         }
     }
     sourceSets {
         main {
+            jniLibs.srcDirs += '../../dali-env/android/lib'
+            assets.srcDirs += '../../dali-env/android/files'
             assets.srcDirs += './assets'
         }
     }

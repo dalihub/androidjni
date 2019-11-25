@@ -15,7 +15,7 @@
  *
  */
 
-#include <dali/integration-api/adaptors/android/application-launcher.h>
+#include <dali/integration-api/adaptor-framework/android/application-launcher.h>
 #include <dali-toolkit/dali-toolkit.h>
 
 using namespace Dali;

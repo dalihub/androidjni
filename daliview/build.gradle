@@ -1,10 +1,20 @@
 apply plugin: 'com.android.library'
 
+def buildType
+
 android {
+    signingConfigs {
+        release {
+            storeFile file('../key.jks')
+            storePassword 'samsung'
+            keyAlias = 'key0'
+            keyPassword 'samsung'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
-        minSdkVersion 25
-        targetSdkVersion 28
+        minSdkVersion 26
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         externalNativeBuild {
@@ -22,25 +32,26 @@ android {
     buildTypes {
         debug {
             ndk {
-                abiFilters "x86_64", "armeabi-v7a"
+                abiFilters "armeabi-v7a"
             }
+            buildType = "debug"
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             ndk {
-                abiFilters "x86_64", "armeabi-v7a"
+                abiFilters "armeabi-v7a"
             }
+            buildType = "release"
         }
     }
     packagingOptions {
-        pickFirst 'lib/x86_64/libc++_shared.so'
         pickFirst 'lib/armeabi-v7a/libc++_shared.so'
     }
     sourceSets {
         main {
-            jniLibs.srcDirs += '../dali/lib'
-            assets.srcDirs += '../dali/assets'
+            jniLibs.srcDirs += '../../dali-env/android/lib'
+            assets.srcDirs += '../../dali-env/android/files'
         }
     }
     externalNativeBuild {
@@ -65,14 +76,35 @@ dependencies {
 }
 
 task buildDaliDependencies(type:Exec) {
-    workingDir "../../android-dependencies"
-    commandLine 'sh', './buildall.sh'
+    def daliDir = file('../../dali-env/android').getAbsolutePath()
+    environment "PREFIX", daliDir
+    environment "ANDROID_ABI", "armeabi-v7a"
+    environment "ANDROID_PLATFORM", "26"
+    if (buildType == 'debug')
+        environment "DEBUG", "1"
+    workingDir "../../android-dependencies/cmake"
+    commandLine 'sh',  './buildall.sh'
 }
 
 task buildDali(type:Exec) {
     workingDir "../dali"
+    if (buildType == 'debug')
+        environment "DEBUG", "1"
     commandLine 'sh', './build.sh'
+}
+
+task cleanDaliDependencies(type:Exec) {
+    workingDir "../../android-dependencies/cmake"
+    commandLine 'sh',  './buildall.sh', 'clean'
+}
+
+task cleanDali(type:Exec) {
+    workingDir "../dali"
+    commandLine 'sh', './build.sh', 'clean'
 }
 
 buildDali.dependsOn buildDaliDependencies
 preBuild.dependsOn buildDali
+
+cleanDali.dependsOn cleanDaliDependencies
+clean.dependsOn cleanDali

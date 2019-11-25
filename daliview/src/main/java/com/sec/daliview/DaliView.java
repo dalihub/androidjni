@@ -28,7 +28,8 @@ public class DaliView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
 
         System.loadLibrary("dali-core");
-        System.loadLibrary("dali");
+        System.loadLibrary("dali-adaptor");
+        System.loadLibrary("dali-toolkit");
 
         System.loadLibrary("daliview");
         nativeOnConfigure(context.getAssets(), context.getFilesDir().getAbsolutePath());
@@ -42,7 +43,8 @@ public class DaliView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
 
         System.loadLibrary("dali-core");
-        System.loadLibrary("dali");
+        System.loadLibrary("dali-adaptor");
+        System.loadLibrary("dali-toolkit");
 
         System.loadLibrary("daliview");
         nativeOnConfigure(context.getAssets(), context.getFilesDir().getAbsolutePath());
@@ -192,8 +194,8 @@ public class DaliView extends SurfaceView implements SurfaceHolder.Callback {
 
     public static native boolean nativeOnCallback(long nativeCallback, long nativeCallbackData);
 
-    static {
-        System.loadLibrary("daliview");
-    }
+//    static {
+//        System.loadLibrary("daliview");
+//    }
 }
 
