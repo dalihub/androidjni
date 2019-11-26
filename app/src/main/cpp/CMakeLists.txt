@@ -23,15 +23,12 @@ pkg_check_modules(DALI_CORE dali-core REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMEN
 pkg_check_modules(DALI_ADAPTOR dali-adaptor REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
 pkg_check_modules(DALI_TOOLKIT dali-toolkit REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
 
-set(DALIVIEW_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../daliview")
-string(TOLOWER ${CMAKE_BUILD_TYPE} build_type)
-
 add_library(daliview SHARED
         IMPORTED)
 
 set_target_properties(daliview
         PROPERTIES IMPORTED_LOCATION
-        ${DALIVIEW_DIR}/build/intermediates/cmake/${build_type}/obj/${ANDROID_ABI}/libdaliview.so )
+        ${DALI_DIR}/dali-env/android/lib/${ANDROID_ABI}/libdaliview.so )
 
 add_definitions(-DDEMO_IMAGE_DIR=\"assets/images/\")
 add_definitions(-DDEMO_MODEL_DIR=\"assets/models/\")

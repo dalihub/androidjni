@@ -47,6 +47,7 @@ android {
     }
     packagingOptions {
         pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libdaliview.so'
     }
     sourceSets {
         main {

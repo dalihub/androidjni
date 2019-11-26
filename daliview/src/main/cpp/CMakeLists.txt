@@ -24,6 +24,10 @@ pkg_check_modules(DALI_TOOLKIT dali-toolkit REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVI
 add_library(daliview SHARED
         daliview.cpp)
 
+set_target_properties(daliview
+        PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "${DALI_DIR}/dali-env/android/lib/${ANDROID_ABI}")
+
 # Include libraries needed for daliview lib
 target_link_libraries(daliview
                       ${DALI_TOOLKIT_LDFLAGS}
@@ -32,3 +36,4 @@ target_link_libraries(daliview
                       android
                       EGL
                       GLESv3)
+
