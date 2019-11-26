@@ -19,9 +19,9 @@ else()
 set(ENABLE_TRACE OFF)
 endif()
 
-pkg_check_modules(DALI_CORE dali-core REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
-pkg_check_modules(DALI_ADAPTOR dali-adaptor REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
-pkg_check_modules(DALI_TOOLKIT dali-toolkit REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
+pkg_check_modules(DALI_CORE dali-core NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
+pkg_check_modules(DALI_ADAPTOR dali-adaptor NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
+pkg_check_modules(DALI_TOOLKIT dali-toolkit NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
 
 add_library(daliview SHARED
         IMPORTED)
