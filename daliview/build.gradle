@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-def buildType
+def buildType = "debug"
 
 android {
     signingConfigs {

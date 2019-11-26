@@ -51,5 +51,5 @@ Getting Started
 8. Launch the studio after setting the enviroment variables: path/to/studio/android-studio/bin/studio.sh.
    * Import androidjni project from dali/androidjni folder using AndroidStudio.
    * Wait for downloading gradle and gradle sync to finish. It might take around 5 min.
-   * Choose *Make Project*. Should build everything including dependencies and libraries, might take up to 15 min the first time.
+   * Choose *Clean Project*. Should build everything including dependencies and libraries, might take up to 15 min the first time.
 

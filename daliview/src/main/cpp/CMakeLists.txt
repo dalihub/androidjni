@@ -12,14 +12,18 @@ include_directories(${DALI_DIR}/dali-env/android/include)
 include_directories(${DALI_DIR}/dali-env/android/include/dali)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-set(ENABLE_TRACE ON)
+  set(ENABLE_TRACE ON)
 else()
-set(ENABLE_TRACE OFF)
+  set(ENABLE_TRACE OFF)
 endif()
 
-pkg_check_modules(DALI_CORE dali-core NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
-pkg_check_modules(DALI_ADAPTOR dali-adaptor NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
-pkg_check_modules(DALI_TOOLKIT dali-toolkit NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
+if (EXISTS "${DALI_DIR}/dali-env/android")
+  pkg_check_modules(DALI_CORE dali-core REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
+  pkg_check_modules(DALI_ADAPTOR dali-adaptor REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
+  pkg_check_modules(DALI_TOOLKIT dali-toolkit NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
+else()
+  message(WARNING "Clean Project after first gradle sync!")
+endif()
 
 add_library(daliview SHARED
         daliview.cpp)
