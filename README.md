@@ -2,7 +2,7 @@ DALi Android JNI
 ================
 
 This uses the new [Android Studio CMake plugin](http://tools.android.com/tech-docs/external-c-builds) with C++ support.
-For how to use Android Studio, refer to [Andrid Studio CMake](https://codelabs.developers.google.com/codelabs/android-studio-cmake/index.html)
+For how to use Android Studio, refer to [Android Studio CMake](https://codelabs.developers.google.com/codelabs/android-studio-cmake/index.html)
 
 Pre-requisites
 --------------
@@ -22,9 +22,9 @@ Getting Started
    * Once installed, note the NDK path for the environment variable later on. path/to/ndk is the folder containing ndk-build. Usually, it is path/to/sdk/ndk-bundle.
 3. Create a folder called **dali** and then change to that folder. Currently, it is important that you call it **dali**.
 4. Clone the following repos in this folder from https://github.com/dalihub/:
-   * **dali-core**, checkout branch **devel/master**, tag **dali_1.4.38**.
-   * **dali-adaptor**, checkout branch **devel/android**.
-   * **dali-toolkit**, checkout branch **devel/master**, tag **dali_1.4.38**.
+   * **dali-core**, checkout branch **devel/master**.
+   * **dali-adaptor**, checkout branch **devel/master**.
+   * **dali-toolkit**, checkout branch **devel/master**.
    * **android-dependencies**, checkout branch **master**.
    * **androidjni**, checkout branch **master_daliview_with_native_daliapp**.
 5. Export build environment variables:
