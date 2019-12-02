@@ -4,8 +4,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -frtti -w -Wall -std=gnu++1
 
 # DALi
 get_filename_component(DALI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE)
-set(ANDROID_SDK $ENV{ANDROID_SDK})
-set(ANDROID_NDK $ENV{ANDROID_NDK})
 
 set(ENV{PKG_CONFIG_PATH}  "${DALI_DIR}/dali-env/android/lib/${ANDROID_ABI}/pkgconfig:$ENV{PKG_CONFIG_PATH}")
 find_package(PkgConfig REQUIRED)
@@ -22,7 +20,7 @@ endif()
 if (EXISTS "${DALI_DIR}/dali-env/android")
   pkg_check_modules(DALI_CORE dali-core REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
   pkg_check_modules(DALI_ADAPTOR dali-adaptor REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
-  pkg_check_modules(DALI_TOOLKIT dali-toolkit NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
+  pkg_check_modules(DALI_TOOLKIT dali-toolkit REQUIRED NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH)
 else()
   message(WARNING "Clean Project after first gradle sync!")
 endif()

@@ -94,6 +94,11 @@ task buildDali(type:Exec) {
     commandLine 'sh', './build.sh'
 }
 
+task cleanDaliEnv(type:Delete) {
+    def daliDir = file('../../dali-env/android').getAbsolutePath()
+    delete daliDir
+}
+
 task cleanDaliDependencies(type:Exec) {
     workingDir "../../android-dependencies/cmake"
     commandLine 'sh',  './buildall.sh', 'clean'
@@ -107,5 +112,6 @@ task cleanDali(type:Exec) {
 buildDali.dependsOn buildDaliDependencies
 preBuild.dependsOn buildDali
 
+cleanDaliDependencies.dependsOn cleanDaliEnv
 cleanDali.dependsOn cleanDaliDependencies
 clean.dependsOn cleanDali
