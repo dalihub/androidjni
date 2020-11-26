@@ -28,9 +28,9 @@ public class DaliView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
 
         if (nativeHandle == 0) {
-            System.loadLibrary("dali-core");
-            System.loadLibrary("dali-adaptor");
-            System.loadLibrary("dali-toolkit");
+            System.loadLibrary("dali2-core");
+            System.loadLibrary("dali2-adaptor");
+            System.loadLibrary("dali2-toolkit");
 
             System.loadLibrary("daliview");
             nativeOnConfigure(context.getAssets(), context.getFilesDir().getAbsolutePath());
@@ -45,9 +45,9 @@ public class DaliView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
 
         if (nativeHandle == 0) {
-            System.loadLibrary("dali-core");
-            System.loadLibrary("dali-adaptor");
-            System.loadLibrary("dali-toolkit");
+            System.loadLibrary("dali2-core");
+            System.loadLibrary("dali2-adaptor");
+            System.loadLibrary("dali2-toolkit");
 
             System.loadLibrary("daliview");
             nativeOnConfigure(context.getAssets(), context.getFilesDir().getAbsolutePath());
@@ -95,7 +95,9 @@ public class DaliView extends SurfaceView implements SurfaceHolder.Callback {
     protected void finalize() throws Throwable {
         try {
             nativeOnFinalize(nativeHandle);
-            nativeHandle = 0;
+            // nativeHandle = 0;
+            // Keep the same instance of DALi for now until DALi cleanup is sorted.
+            // The application will be restarted by the system eventually.
         } finally {
             super.finalize();
         }
