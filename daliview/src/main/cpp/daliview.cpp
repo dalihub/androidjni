@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Samsung Electronics Co., Ltd.
+ * Copyright (c) 2020 Samsung Electronics Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,10 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
-#include <dali/public-api/common/stage.h>
-#include <dali/public-api/events/touch-point.h>
 #include <dali/public-api/events/key-event.h>
 #include <dali/devel-api/adaptor-framework/application-devel.h>
+#include <dali/devel-api/events/key-event-devel.h>
+#include <dali/devel-api/events/touch-point.h>
 #include <dali/integration-api/debug.h>
 #include <dali/integration-api/adaptor-framework/adaptor.h>
 #include <dali/integration-api/adaptor-framework/android/android-framework.h>
@@ -130,6 +130,8 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnConfigu
   std::string filesDir = std::string( cstr );
   jenv->ReleaseStringUTFChars( filesPath, cstr );
 
+  Dali::Integration::AndroidFramework::Get().SetInternalDataPath(filesDir);
+
   std::string fontconfigPath = filesDir + "/fonts";
   setenv( "FONTCONFIG_PATH", fontconfigPath.c_str(), 1 );
   std::string fontconfigFile = fontconfigPath + "/fonts.conf";
@@ -218,22 +220,22 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnTouchEv
 {
   DALI_LOG_RELEASE_INFO( "nativeOnTouchEvent handle(%lld), deviceId(%d), action(%d), x(%f), y(%f), timestamp(%lld)", handle, deviceId, action, x, y, timestamp );
 
-  Dali::TouchPoint::State state = Dali::TouchPoint::Down;
+  Dali::PointState::Type state = Dali::PointState::DOWN;
   switch ( action & AMOTION_EVENT_ACTION_MASK )
   {
     case AMOTION_EVENT_ACTION_DOWN:
       break;
     case AMOTION_EVENT_ACTION_UP:
-      state = Dali::TouchPoint::Up;
+      state = Dali::PointState::UP;
       break;
     case AMOTION_EVENT_ACTION_MOVE:
-      state = Dali::TouchPoint::Motion;
+      state = Dali::PointState::MOTION;
       break;
     case AMOTION_EVENT_ACTION_CANCEL:
-      state = Dali::TouchPoint::Interrupted;
+      state = Dali::PointState::INTERRUPTED;
       break;
     case AMOTION_EVENT_ACTION_OUTSIDE:
-      state = Dali::TouchPoint::Leave;
+      state = Dali::PointState::LEAVE;
       break;
   }
 
@@ -245,13 +247,13 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnKeyEven
 {
   DALI_LOG_RELEASE_INFO( "nativeOnKeyEvent handle(%lld), deviceId(%d), action(%d), keyCode(%d), timestamp(%lld)", handle, deviceId, action, keyCode, timestamp );
 
-  Dali::KeyEvent::State state = Dali::KeyEvent::Down;
+  Dali::KeyEvent::State state = Dali::KeyEvent::DOWN;
   switch ( action )
   {
     case AKEY_EVENT_ACTION_DOWN:
       break;
     case AKEY_EVENT_ACTION_UP:
-      state = Dali::KeyEvent::Up;
+      state = Dali::KeyEvent::UP;
       break;
   }
 
@@ -265,32 +267,14 @@ extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnKeyEven
       break;
   }
 
-  Dali::KeyEvent keyEvent( keyName, "", keyCode, 0, timestamp, state );
+  Dali::KeyEvent keyEvent = Dali::DevelKeyEvent::New(keyName, "", "", keyCode, 0, timestamp, state, "", "", Dali::Device::Class::NONE, Dali::Device::Subclass::NONE);
   Dali::Adaptor::Get().FeedKeyEvent( keyEvent );
 }
 
 extern "C" JNIEXPORT void JNICALL Java_com_sec_daliview_DaliView_nativeOnFinalize(JNIEnv* jenv, jobject obj, jlong handle)
 {
   DALI_LOG_RELEASE_INFO( "nativeOnFinalize handle(%lld)", handle );
-
-  if( handle )
-  {
-    AConfiguration* configuration = Dali::Integration::AndroidFramework::Get().GetApplicationConfiguration();
-    Dali::Integration::AndroidFramework::Get().OnTerminate();
-
-    if( configuration )
-    {
-      AConfiguration_delete( configuration );
-      Dali::Integration::AndroidFramework::Get().SetApplicationConfiguration( nullptr );
-    }
-
-    Dali::Integration::AndroidFramework::Get().SetApplicationAssets( nullptr );
-
-    Dali::RefObject* refObject = reinterpret_cast<Dali::RefObject*>( handle );
-    refObject->Unreference();
-
-    Dali::Integration::AndroidFramework::Delete();
-  }
+  // We don't have an option to cleanup existing DALi instance yet - needs major refactoring in DALi
 }
 
 extern "C" JNIEXPORT jboolean JNICALL Java_com_sec_daliview_DaliView_nativeOnCallback(JNIEnv* jenv, jclass clazz, jlong callback, jlong callbackData)
